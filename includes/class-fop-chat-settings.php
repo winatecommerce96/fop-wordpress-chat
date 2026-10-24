@@ -193,8 +193,10 @@ class FOP_Chat_Settings {
 		$response = wp_remote_get(
 			self::config_url() . '?k=' . rawurlencode( $key ),
 			array(
-				'timeout' => 3,
-				'headers' => array( 'Origin' => $origin ),
+				'timeout'             => 3,
+				'redirection'         => 0,
+				'limit_response_size' => 8192,
+				'headers'             => array( 'Origin' => $origin ),
 			)
 		);
 		$live = false;

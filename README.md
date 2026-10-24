@@ -45,7 +45,8 @@ Two external services are involved. Nothing is sent until a site key is saved.
   Origin: <your site origin, from home_url()>
   ```
 
-  It has a 3 second timeout. The answer only decides which notice is shown.
+  It has a 3 second timeout, follows no redirects and reads at most 8 KB. The answer only decides which notice is
+  shown.
 - Terms: <https://frontofficepilot.com/terms-of-service/>. Privacy: <https://frontofficepilot.com/privacy-policy/>.
 
 **Vapi (`api.vapi.ai`)**

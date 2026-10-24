@@ -51,7 +51,17 @@ class StatusCheckTest extends TestCase {
 		$this->assertCount( 1, FOP_Test_State::$remote_calls );
 		$call = FOP_Test_State::$remote_calls[0];
 		$this->assertSame( 'https://chat.frontofficepilot.com/widget/v1/config?k=' . rawurlencode( self::KEY ), $call['url'] );
-		$this->assertSame( array( 'timeout' => 3, 'headers' => array( 'Origin' => 'https://shop.example.com' ) ), $call['args'] );
+		$this->assertSame(
+			array(
+				'timeout'             => 3,
+				'redirection'         => 0,
+				'limit_response_size' => 8192,
+				'headers'             => array( 'Origin' => 'https://shop.example.com' ),
+			),
+			$call['args']
+		);
+		$this->assertSame( 0, $call['args']['redirection'] );
+		$this->assertSame( 8192, $call['args']['limit_response_size'] );
 	}
 
 	public function test_live_when_enabled_true() {
