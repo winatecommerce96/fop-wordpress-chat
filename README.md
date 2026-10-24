@@ -29,22 +29,32 @@ To remove the widget, clear the field and save, or deactivate the plugin. Deleti
 
 ## What it sends
 
-**From your WordPress server** (the plugin itself): one request, only when an administrator opens
-Settings → Front Office Pilot Chat with a key saved:
+Two external services are involved. Nothing is sent until a site key is saved.
 
-```
-GET https://chat.frontofficepilot.com/widget/v1/config?k=<site key>
-Origin: <your site's scheme://host[:port], from home_url()>
-```
+**Front Office Pilot (`chat.frontofficepilot.com`)**
 
-with a 3 second timeout. The answer only decides which notice is shown. Nothing else leaves your server: no
-tracking, no telemetry, no other options stored, no AJAX or REST endpoints.
+- From visitors' browsers, on every front-end page: the widget script loads from
+  `https://chat.frontofficepilot.com/widget/v1/fop-chat.js`, then requests `/widget/v1/config` with the **site key** and
+  the **page's origin** (the browser's `Origin` header).
+- From your WordPress server, only when an administrator opens Settings → Front Office Pilot Chat with a key saved:
 
-**From visitors' browsers** (the hosted widget script, not this plugin): the browser loads `fop-chat.js`, fetches the
-same config endpoint, and, when a visitor chats, sends their messages to the chat assistant together with the current
-page path, the first page path of the visit, and the Google Analytics `_ga` / `_ga_<stream>` cookie values when they
-look like GA cookies. Paths are at most 100 characters and are blanked if they look like an email address or phone
-number.
+  ```
+  GET https://chat.frontofficepilot.com/widget/v1/config?k=<site key>
+  Origin: <your site origin, from home_url()>
+  ```
+
+  It has a 3 second timeout. The answer only decides which notice is shown.
+- Terms: <https://frontofficepilot.com/terms-of-service/>. Privacy: <https://frontofficepilot.com/privacy-policy/>.
+
+**Vapi (`api.vapi.ai`)**
+
+- From visitors' browsers only, when a visitor chats: the **chat messages** they type, the **page path** (current path
+  and first path of the visit, at most 100 characters each and blanked if they look like an email address or phone
+  number) and the Google Analytics cookie IDs **`_ga` and `_ga_<id>`** when they look like GA cookies. Your server
+  sends nothing to Vapi.
+- Terms: <https://vapi.ai/terms-of-service>. Privacy: <https://vapi.ai/privacy>.
+
+The plugin itself has no tracking or telemetry, stores no other options, and registers no AJAX or REST endpoints.
 
 ## Troubleshooting
 

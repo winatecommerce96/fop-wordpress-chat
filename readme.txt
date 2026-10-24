@@ -19,14 +19,26 @@ Front Office Pilot Chat adds the Front Office Pilot chat widget to every page of
 * Shows whether chat is live on your site, and links to your dashboard if your site address still needs adding.
 * No tracking, no extra database tables, no AJAX or REST endpoints.
 
-= External service =
+== External services ==
 
-This plugin connects to Front Office Pilot (https://frontofficepilot.com/), a hosted service.
+This plugin relies on two external services. Nothing is sent until you save a site key.
 
-* On every front-end page, visitors' browsers load the widget script from https://chat.frontofficepilot.com/widget/v1/fop-chat.js. The script reads your site key and, when a visitor chats, sends their messages to the chat assistant along with the current page path, the first page path of the visit and Google Analytics cookie values (`_ga`, `_ga_<stream>`) when present.
-* When an administrator opens Settings, Front Office Pilot Chat, WordPress makes one request from your server to https://chat.frontofficepilot.com/widget/v1/config with your site key and your site address, to show whether chat is live.
+= Front Office Pilot (chat.frontofficepilot.com) =
 
-Terms: https://frontofficepilot.com/terms-of-service/ . Privacy: https://frontofficepilot.com/privacy-policy/ .
+Front Office Pilot hosts the chat widget and decides which sites may show it.
+
+* On every front-end page, the visitor's browser loads the widget script from https://chat.frontofficepilot.com/widget/v1/fop-chat.js and then requests https://chat.frontofficepilot.com/widget/v1/config. That request sends your site key and the page's origin (for example `https://www.example.com`).
+* When an administrator opens Settings, Front Office Pilot Chat, your server makes one request to https://chat.frontofficepilot.com/widget/v1/config with your site key and your site origin, to show whether chat is live.
+
+Terms of service: https://frontofficepilot.com/terms-of-service/
+Privacy policy: https://frontofficepilot.com/privacy-policy/
+
+= Vapi (api.vapi.ai) =
+
+Vapi runs the chat assistant. When a visitor chats, their browser sends the following straight to https://api.vapi.ai: the chat messages the visitor types, the page path (the current path and the first path of the visit), and the Google Analytics cookie IDs `_ga` and `_ga_<id>` when present. Your WordPress server sends nothing to Vapi.
+
+Terms of service: https://vapi.ai/terms-of-service
+Privacy policy: https://vapi.ai/privacy
 
 == Installation ==
 
