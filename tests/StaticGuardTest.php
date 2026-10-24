@@ -38,6 +38,7 @@ class StaticGuardTest extends TestCase {
 			array( '\\bcurl_' ),
 			array( 'file_get_contents' ),
 			array( 'fsockopen' ),
+			array( 'script_loader_tag' ),
 		);
 	}
 

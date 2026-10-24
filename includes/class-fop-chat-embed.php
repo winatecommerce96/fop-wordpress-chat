@@ -10,7 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Prints <script src="..." data-site-key="..." async></script> on the front end when a key is saved.
+ * Enqueues the hosted script (async, footer) and adds data-site-key to its tag when a key is saved.
+ * WordPress 6.4+ renders it as <script src="..." id="fop-chat-js" async data-wp-strategy="async" data-site-key="...">.
  */
 class FOP_Chat_Embed {
 
@@ -21,7 +22,7 @@ class FOP_Chat_Embed {
 	 */
 	public static function init() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
-		add_filter( 'script_loader_tag', array( __CLASS__, 'filter_tag' ), 10, 3 );
+		add_filter( 'wp_script_attributes', array( __CLASS__, 'filter_attributes' ) );
 	}
 
 	/**
@@ -35,32 +36,38 @@ class FOP_Chat_Embed {
 	}
 
 	/**
-	 * Enqueue the hosted script (no version query arg, in the footer). Nothing without a key.
+	 * Enqueue the hosted script (no version query arg, async, in the footer). Nothing without a key.
 	 */
 	public static function enqueue() {
 		if ( '' === self::key() ) {
 			return;
 		}
-		wp_enqueue_script( self::HANDLE, FOP_CHAT_SCRIPT_URL, array(), null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- the v1 URL is the version.
+		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- the v1 URL is the version.
+			self::HANDLE,
+			FOP_CHAT_SCRIPT_URL,
+			array(),
+			null,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'async',
+			)
+		);
 	}
 
 	/**
-	 * Rewrite our tag into the contract shape. Other handles are untouched.
+	 * Add data-site-key to our script tag only. WordPress escapes attribute values.
 	 *
-	 * @param string $tag    Tag HTML.
-	 * @param string $handle Script handle.
-	 * @param string $src    Script URL.
-	 * @return string
+	 * @param array $attributes Script tag attributes.
+	 * @return array
 	 */
-	public static function filter_tag( $tag, $handle, $src ) {
-		if ( self::HANDLE !== $handle ) {
-			return $tag;
+	public static function filter_attributes( $attributes ) {
+		if ( ! is_array( $attributes ) || ! isset( $attributes['id'] ) || self::HANDLE . '-js' !== $attributes['id'] ) {
+			return $attributes;
 		}
 		$key = self::key();
-		if ( '' === $key ) {
-			return '';
+		if ( '' !== $key ) {
+			$attributes['data-site-key'] = $key;
 		}
-		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- this is the enqueued script's own tag.
-		return '<script src="' . esc_url( $src ) . '" data-site-key="' . esc_attr( $key ) . '" async></script>' . "\n";
+		return $attributes;
 	}
 }

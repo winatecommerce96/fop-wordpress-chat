@@ -8,11 +8,11 @@ class EmbedTest extends TestCase {
 		FOP_Test_State::reset();
 	}
 
-	public function test_init_hooks_front_end_only() {
+	public function test_init_hooks_enqueue_and_attributes_filter_only() {
 		FOP_Chat_Embed::init();
-		$this->assertArrayHasKey( 'wp_enqueue_scripts', FOP_Test_State::$actions );
-		$this->assertArrayHasKey( 'script_loader_tag', FOP_Test_State::$filters );
-		$this->assertSame( 3, FOP_Test_State::$filters['script_loader_tag'][0][2] );
+		$this->assertSame( array( array( 'FOP_Chat_Embed', 'enqueue' ) ), FOP_Test_State::$actions['wp_enqueue_scripts'] );
+		$this->assertSame( array( 'FOP_Chat_Embed', 'filter_attributes' ), FOP_Test_State::$filters['wp_script_attributes'][0][0] );
+		$this->assertArrayNotHasKey( 'script_loader_tag', FOP_Test_State::$filters );
 	}
 
 	public function test_no_key_enqueues_nothing() {
@@ -26,15 +26,19 @@ class EmbedTest extends TestCase {
 		$this->assertSame( array(), FOP_Test_State::$enqueued );
 	}
 
-	public function test_key_enqueues_script_without_version_in_footer() {
+	public function test_key_enqueues_async_footer_script_without_version() {
 		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = self::KEY;
 		FOP_Chat_Embed::enqueue();
-		$this->assertArrayHasKey( FOP_Chat_Embed::HANDLE, FOP_Test_State::$enqueued );
-		$s = FOP_Test_State::$enqueued[ FOP_Chat_Embed::HANDLE ];
-		$this->assertSame( FOP_CHAT_SCRIPT_URL, $s['src'] );
-		$this->assertSame( array(), $s['deps'] );
-		$this->assertNull( $s['ver'] );
-		$this->assertTrue( $s['in_footer'] );
+		$this->assertSame(
+			array(
+				'handle' => 'fop-chat',
+				'src'    => FOP_CHAT_SCRIPT_URL,
+				'deps'   => array(),
+				'ver'    => null,
+				'args'   => array( 'in_footer' => true, 'strategy' => 'async' ),
+			),
+			FOP_Test_State::$enqueued['fop-chat']
+		);
 	}
 
 	public function test_enqueue_makes_no_remote_call() {
@@ -43,28 +47,45 @@ class EmbedTest extends TestCase {
 		$this->assertSame( array(), FOP_Test_State::$remote_calls );
 	}
 
-	public function test_tag_is_exact_contract_shape() {
+	public function test_attributes_filter_adds_site_key_for_our_id() {
 		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = self::KEY;
-		$wp_tag = "<script src=\"" . FOP_CHAT_SCRIPT_URL . "\" id=\"fop-chat-js\"></script>\n";
-		$out    = FOP_Chat_Embed::filter_tag( $wp_tag, FOP_Chat_Embed::HANDLE, FOP_CHAT_SCRIPT_URL );
+		$attrs = array( 'src' => FOP_CHAT_SCRIPT_URL, 'id' => 'fop-chat-js', 'async' => true, 'data-wp-strategy' => 'async' );
 		$this->assertSame(
-			'<script src="https://chat.frontofficepilot.com/widget/v1/fop-chat.js" data-site-key="' . self::KEY . '" async></script>' . "\n",
-			$out
+			array( 'src' => FOP_CHAT_SCRIPT_URL, 'id' => 'fop-chat-js', 'async' => true, 'data-wp-strategy' => 'async', 'data-site-key' => self::KEY ),
+			FOP_Chat_Embed::filter_attributes( $attrs )
 		);
-		$this->assertContains( self::KEY, FOP_Test_State::$esc_calls['esc_attr'] );
-		$this->assertContains( FOP_CHAT_SCRIPT_URL, FOP_Test_State::$esc_calls['esc_url'] );
 	}
 
-	public function test_other_handles_untouched() {
+	/**
+	 * @dataProvider other_attrs
+	 */
+	public function test_attributes_filter_leaves_other_scripts_alone( $attrs ) {
 		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = self::KEY;
-		$tag = "<script src=\"https://example.com/x.js\" id=\"x-js\"></script>\n";
-		$this->assertSame( $tag, FOP_Chat_Embed::filter_tag( $tag, 'jquery', 'https://example.com/x.js' ) );
+		$this->assertSame( $attrs, FOP_Chat_Embed::filter_attributes( $attrs ) );
 	}
 
-	public function test_hostile_stored_key_never_reaches_tag() {
-		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = '"><script>alert(1)</script>';
-		$tag = "<script src=\"" . FOP_CHAT_SCRIPT_URL . "\" id=\"fop-chat-js\"></script>\n";
-		$out = FOP_Chat_Embed::filter_tag( $tag, FOP_Chat_Embed::HANDLE, FOP_CHAT_SCRIPT_URL );
-		$this->assertSame( '', $out );
+	public function other_attrs() {
+		return array(
+			'other id'    => array( array( 'src' => 'https://example.com/x.js', 'id' => 'jquery-core-js' ) ),
+			'similar id'  => array( array( 'src' => 'https://example.com/x.js', 'id' => 'fop-chat-js-extra' ) ),
+			'no id'       => array( array( 'src' => 'https://example.com/x.js' ) ),
+			'inline'      => array( array( 'id' => 'fop-chat-js-after' ) ),
+		);
+	}
+
+	public function test_attributes_filter_without_valid_key_adds_nothing() {
+		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = '"><script>';
+		$attrs = array( 'src' => FOP_CHAT_SCRIPT_URL, 'id' => 'fop-chat-js', 'async' => true );
+		$this->assertSame( $attrs, FOP_Chat_Embed::filter_attributes( $attrs ) );
+	}
+
+	public function test_attributes_filter_tolerates_non_array() {
+		$this->assertSame( 'x', FOP_Chat_Embed::filter_attributes( 'x' ) );
+	}
+
+	public function test_requires_wordpress_6_4_for_script_attributes() {
+		$root = dirname( __DIR__ );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Requires at least:\s*6\.4\s*$/m', file_get_contents( $root . '/front-office-pilot-chat.php' ) );
+		$this->assertMatchesRegularExpression( '/^Requires at least:\s*6\.4\s*$/m', file_get_contents( $root . '/readme.txt' ) );
 	}
 }

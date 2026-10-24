@@ -161,8 +161,8 @@ function wp_parse_url( $url, $component = -1 ) {
 }
 
 // Scripts.
-function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ) {
-	FOP_Test_State::$enqueued[ $handle ] = compact( 'handle', 'src', 'deps', 'ver', 'in_footer' );
+function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $args = array() ) {
+	FOP_Test_State::$enqueued[ $handle ] = compact( 'handle', 'src', 'deps', 'ver', 'args' );
 }
 
 // HTTP.

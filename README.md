@@ -1,9 +1,11 @@
 # Front Office Pilot Chat (WordPress plugin)
 
-Adds the Front Office Pilot chat widget to a WordPress site. The site owner pastes a site key; the plugin prints
+Adds the Front Office Pilot chat widget to a WordPress site (WordPress 6.4+, PHP 7.4+). The site owner pastes a site
+key; the plugin enqueues the hosted script with `strategy => async` in the footer and adds `data-site-key` through the
+`wp_script_attributes` filter, so WordPress prints
 
 ```html
-<script src="https://chat.frontofficepilot.com/widget/v1/fop-chat.js" data-site-key="fop_pk_..." async></script>
+<script src="https://chat.frontofficepilot.com/widget/v1/fop-chat.js" id="fop-chat-js" async data-wp-strategy="async" data-site-key="fop_pk_..."></script>
 ```
 
 in the footer of every front-end page. That is the whole plugin: one setting, one script tag, and a status check on
