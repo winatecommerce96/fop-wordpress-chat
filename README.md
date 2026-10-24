@@ -40,7 +40,7 @@ tracking, no telemetry, no other options stored, no AJAX or REST endpoints.
 **From visitors' browsers** (the hosted widget script, not this plugin): the browser loads `fop-chat.js`, fetches the
 same config endpoint, and, when a visitor chats, sends their messages to the chat assistant together with the current
 page path, the first page path of the visit, and the Google Analytics `_ga` / `_ga_<stream>` cookie values when they
-look like GA cookies. Paths are trimmed to 100 characters and blanked if they look like an email address or phone
+look like GA cookies. Paths are at most 100 characters and are blanked if they look like an email address or phone
 number.
 
 ## Troubleshooting
