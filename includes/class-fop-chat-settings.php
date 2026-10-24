@@ -49,8 +49,8 @@ class FOP_Chat_Settings {
 	 */
 	public static function add_page() {
 		$hook = add_options_page(
-			__( 'Front Office Pilot Chat', 'fop-chat' ),
-			__( 'Front Office Pilot Chat', 'fop-chat' ),
+			__( 'Front Office Pilot Chat', 'front-office-pilot-chat' ),
+			__( 'Front Office Pilot Chat', 'front-office-pilot-chat' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
@@ -69,7 +69,7 @@ class FOP_Chat_Settings {
 			FOP_CHAT_OPTION,
 			array(
 				'type'              => 'string',
-				'description'       => __( 'Front Office Pilot site key.', 'fop-chat' ),
+				'description'       => __( 'Front Office Pilot site key.', 'front-office-pilot-chat' ),
 				'sanitize_callback' => array( __CLASS__, 'sanitize_key' ),
 				'default'           => '',
 				'show_in_rest'      => false,
@@ -78,7 +78,7 @@ class FOP_Chat_Settings {
 		add_settings_section( self::SECTION, '', '__return_false', self::PAGE_SLUG );
 		add_settings_field(
 			FOP_CHAT_OPTION,
-			__( 'Site key', 'fop-chat' ),
+			__( 'Site key', 'front-office-pilot-chat' ),
 			array( __CLASS__, 'render_field' ),
 			self::PAGE_SLUG,
 			self::SECTION,
@@ -103,7 +103,7 @@ class FOP_Chat_Settings {
 		add_settings_error(
 			FOP_CHAT_OPTION,
 			'fop_chat_invalid_key',
-			__( 'That is not a valid site key. It starts with fop_pk_ followed by 32 letters and numbers. Your previous key was kept.', 'fop-chat' ),
+			__( 'That is not a valid site key. It starts with fop_pk_ followed by 32 letters and numbers. Your previous key was kept.', 'front-office-pilot-chat' ),
 			'error'
 		);
 		$previous = get_option( FOP_CHAT_OPTION, '' );
@@ -195,13 +195,13 @@ class FOP_Chat_Settings {
 	public static function render_status( $status ) {
 		if ( ! empty( $status['live'] ) ) {
 			/* translators: %s: site origin, e.g. https://shop.example.com */
-			$message = sprintf( __( 'Chat is live on %s.', 'fop-chat' ), $status['origin'] );
+			$message = sprintf( __( 'Chat is live on %s.', 'front-office-pilot-chat' ), $status['origin'] );
 			echo '<div class="notice notice-success inline"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
 		/* translators: %s: site origin, e.g. https://shop.example.com */
-		$message = sprintf( __( 'Add %s in your Front Office Pilot dashboard under Chat widget.', 'fop-chat' ), $status['origin'] );
-		echo '<div class="notice notice-warning inline"><p>' . esc_html( $message ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'fop-chat' ) . '</a></p></div>';
+		$message = sprintf( __( 'Add %s in your Front Office Pilot dashboard under Chat widget.', 'front-office-pilot-chat' ), $status['origin'] );
+		echo '<div class="notice notice-warning inline"><p>' . esc_html( $message ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'front-office-pilot-chat' ) . '</a></p></div>';
 	}
 
 	/**
@@ -214,7 +214,7 @@ class FOP_Chat_Settings {
 			esc_attr( FOP_CHAT_OPTION ),
 			esc_attr( is_string( $value ) ? $value : '' )
 		);
-		echo '<p class="description">' . esc_html__( 'Find your site key in your Front Office Pilot dashboard under Chat widget. Leave empty to remove the chat widget.', 'fop-chat' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Find your site key in your Front Office Pilot dashboard under Chat widget. Leave empty to remove the chat widget.', 'front-office-pilot-chat' ) . '</p>';
 	}
 
 	/**
@@ -222,10 +222,10 @@ class FOP_Chat_Settings {
 	 */
 	public static function render_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to manage these settings.', 'fop-chat' ) );
+			wp_die( esc_html__( 'You do not have permission to manage these settings.', 'front-office-pilot-chat' ) );
 		}
 		echo '<div class="wrap">';
-		echo '<h1>' . esc_html( __( 'Front Office Pilot Chat', 'fop-chat' ) ) . '</h1>';
+		echo '<h1>' . esc_html( __( 'Front Office Pilot Chat', 'front-office-pilot-chat' ) ) . '</h1>';
 		if ( null !== self::$status ) {
 			self::render_status( self::$status );
 		}
@@ -234,7 +234,7 @@ class FOP_Chat_Settings {
 		do_settings_sections( self::PAGE_SLUG );
 		submit_button();
 		echo '</form>';
-		echo '<p>' . esc_html__( 'The chat widget only appears on sites you have added in your dashboard.', 'fop-chat' ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'fop-chat' ) . '</a></p>';
+		echo '<p>' . esc_html__( 'The chat widget only appears on sites you have added in your dashboard.', 'front-office-pilot-chat' ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'front-office-pilot-chat' ) . '</a></p>';
 		echo '</div>';
 	}
 }

@@ -182,4 +182,4 @@ function wp_remote_retrieve_body( $response ) {
 
 FOP_Test_State::reset();
 
-require_once dirname( __DIR__ ) . '/fop-chat.php';
+require_once dirname( __DIR__ ) . '/front-office-pilot-chat.php';

@@ -8,7 +8,7 @@ class BuildZipTest extends TestCase {
 		}
 		$root = dirname( __DIR__ );
 		$out  = trim( (string) shell_exec( escapeshellarg( $root . '/bin/build-zip.sh' ) . ' 2>&1' ) );
-		$this->assertSame( $root . '/dist/fop-wordpress-chat-1.0.0.zip', $out );
+		$this->assertSame( $root . '/dist/front-office-pilot-chat-1.0.0.zip', $out );
 
 		$zip = new ZipArchive();
 		$this->assertTrue( true === $zip->open( $out ) );
@@ -23,11 +23,11 @@ class BuildZipTest extends TestCase {
 		sort( $names );
 		$this->assertSame(
 			array(
-				'fop-wordpress-chat/fop-chat.php',
-				'fop-wordpress-chat/includes/class-fop-chat-embed.php',
-				'fop-wordpress-chat/includes/class-fop-chat-settings.php',
-				'fop-wordpress-chat/readme.txt',
-				'fop-wordpress-chat/uninstall.php',
+				'front-office-pilot-chat/front-office-pilot-chat.php',
+				'front-office-pilot-chat/includes/class-fop-chat-embed.php',
+				'front-office-pilot-chat/includes/class-fop-chat-settings.php',
+				'front-office-pilot-chat/readme.txt',
+				'front-office-pilot-chat/uninstall.php',
 			),
 			$names
 		);

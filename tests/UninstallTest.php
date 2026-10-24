@@ -2,7 +2,7 @@
 use PHPUnit\Framework\TestCase;
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	define( 'WP_UNINSTALL_PLUGIN', 'fop-wordpress-chat/fop-chat.php' );
+	define( 'WP_UNINSTALL_PLUGIN', 'front-office-pilot-chat/front-office-pilot-chat.php' );
 }
 
 class UninstallTest extends TestCase {

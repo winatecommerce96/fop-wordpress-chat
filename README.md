@@ -9,9 +9,12 @@ Adds the Front Office Pilot chat widget to a WordPress site. The site owner past
 in the footer of every front-end page. That is the whole plugin: one setting, one script tag, and a status check on
 its own settings page.
 
+The plugin slug and text domain are `front-office-pilot-chat` (main file `front-office-pilot-chat.php`); WordPress.org
+does not accept "wordpress" in a slug. The GitHub repository keeps the name `fop-wordpress-chat`.
+
 ## Install
 
-1. Download `fop-wordpress-chat-<version>.zip` (or build it, see below).
+1. Download `front-office-pilot-chat-<version>.zip` (or build it, see below).
 2. In WordPress: **Plugins → Add New → Upload Plugin**, choose the zip, **Install Now**, then **Activate**.
 3. Go to **Settings → Front Office Pilot Chat**.
 4. Paste your site key (from your Front Office Pilot dashboard under Chat widget; it looks like `fop_pk_` plus 32
@@ -82,13 +85,13 @@ vendor/bin/phpunit
 
 CI (`.github/workflows/test.yml`) runs the suite on PHP 7.4 and 8.3.
 
-Build the release zip (version read from the `fop-chat.php` header):
+Build the release zip (version read from the `front-office-pilot-chat.php` header):
 
 ```sh
-bin/build-zip.sh   # -> dist/fop-wordpress-chat-<version>.zip
+bin/build-zip.sh   # -> dist/front-office-pilot-chat-<version>.zip
 ```
 
-The zip has one top-level `fop-wordpress-chat/` folder with `fop-chat.php`, `uninstall.php`, `readme.txt` and
+The zip has one top-level `front-office-pilot-chat/` folder with `front-office-pilot-chat.php`, `uninstall.php`, `readme.txt` and
 `includes/` only.
 
 ## Screenshots

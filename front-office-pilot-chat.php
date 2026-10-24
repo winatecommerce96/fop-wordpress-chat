@@ -10,7 +10,7 @@
  * Author URI:        https://frontofficepilot.com/
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       fop-chat
+ * Text Domain:       front-office-pilot-chat
  *
  * @package FOP_Chat
  */

@@ -15,12 +15,31 @@ class SettingsTest extends TestCase {
 	}
 
 	public function test_plugin_header() {
-		$src = file_get_contents( dirname( __DIR__ ) . '/fop-chat.php' );
+		$src = file_get_contents( dirname( __DIR__ ) . '/front-office-pilot-chat.php' );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Front Office Pilot Chat\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*1\.0\.0\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Requires PHP:\s*7\.4\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*License:\s*GPLv2 or later\s*$/m', $src );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*fop-chat\s*$/m', $src );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*front-office-pilot-chat\s*$/m', $src );
+	}
+
+	public function test_old_main_file_is_gone() {
+		$this->assertFileDoesNotExist( dirname( __DIR__ ) . '/fop-chat.php' );
+	}
+
+	public function test_every_translation_call_uses_the_slug_domain() {
+		$root  = dirname( __DIR__ );
+		$files = array_merge( array( $root . '/front-office-pilot-chat.php' ), glob( $root . '/includes/*.php' ) );
+		$found = 0;
+		foreach ( $files as $f ) {
+			$src = file_get_contents( $f );
+			preg_match_all( "/\\b(?:__|_e|_x|_n|esc_html__|esc_attr__|esc_html_e|esc_attr_e)\\(\\s*'(?:[^'\\\\]|\\\\.)*'\\s*,\\s*'([^']*)'/", $src, $m );
+			foreach ( $m[1] as $domain ) {
+				$this->assertSame( 'front-office-pilot-chat', $domain, "wrong text domain in $f" );
+				$found++;
+			}
+		}
+		$this->assertGreaterThan( 5, $found );
 	}
 
 	public function test_registers_one_setting_with_sanitize_callback() {

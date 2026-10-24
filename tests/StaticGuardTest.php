@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 class StaticGuardTest extends TestCase {
 	private function plugin_sources() {
 		$root  = dirname( __DIR__ );
-		$files = array_merge( array( $root . '/fop-chat.php', $root . '/uninstall.php' ), glob( $root . '/includes/*.php' ) );
+		$files = array_merge( array( $root . '/front-office-pilot-chat.php', $root . '/uninstall.php' ), glob( $root . '/includes/*.php' ) );
 		$this->assertGreaterThanOrEqual( 4, count( $files ) );
 		$out = array();
 		foreach ( $files as $f ) {
