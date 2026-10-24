@@ -106,6 +106,19 @@ function add_settings_field( $id, $title, $callback, $page, $section = 'default'
 function add_settings_error( $setting, $code, $message, $type = 'error' ) {
 	FOP_Test_State::$settings_errors[] = compact( 'setting', 'code', 'message', 'type' );
 }
+function get_settings_errors( $setting = '', $sanitize = false ) {
+	if ( '' === $setting ) {
+		return FOP_Test_State::$settings_errors;
+	}
+	return array_values(
+		array_filter(
+			FOP_Test_State::$settings_errors,
+			function ( $e ) use ( $setting ) {
+				return $e['setting'] === $setting;
+			}
+		)
+	);
+}
 function settings_fields( $group ) {
 	FOP_Test_State::$settings_fields_calls[] = $group;
 	echo '<!--settings_fields:' . $group . '-->';

@@ -100,14 +100,31 @@ class FOP_Chat_Settings {
 		if ( self::is_valid_key( $value ) ) {
 			return $value;
 		}
-		add_settings_error(
-			FOP_CHAT_OPTION,
-			'fop_chat_invalid_key',
-			__( 'That is not a valid site key. It starts with fop_pk_ followed by 32 letters and numbers. Your previous key was kept.', 'front-office-pilot-chat' ),
-			'error'
-		);
+		if ( ! self::has_error( 'fop_chat_invalid_key' ) ) {
+			add_settings_error(
+				FOP_CHAT_OPTION,
+				'fop_chat_invalid_key',
+				__( 'That is not a valid site key. It starts with fop_pk_ followed by 32 letters and numbers. Your previous key was kept.', 'front-office-pilot-chat' ),
+				'error'
+			);
+		}
 		$previous = get_option( FOP_CHAT_OPTION, '' );
 		return self::is_valid_key( $previous ) ? $previous : '';
+	}
+
+	/**
+	 * Whether our setting already has an error with this code (the sanitize callback can run twice per save).
+	 *
+	 * @param string $code Error code.
+	 * @return bool
+	 */
+	private static function has_error( $code ) {
+		foreach ( (array) get_settings_errors( FOP_CHAT_OPTION ) as $error ) {
+			if ( isset( $error['code'] ) && $code === $error['code'] ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

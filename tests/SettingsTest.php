@@ -86,6 +86,21 @@ class SettingsTest extends TestCase {
 		);
 	}
 
+	public function test_double_sanitize_adds_one_error() {
+		// WordPress runs the sanitize callback twice when update_option() falls through to add_option().
+		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = self::KEY;
+		$this->assertSame( self::KEY, FOP_Chat_Settings::sanitize_key( 'bad' ) );
+		$this->assertSame( self::KEY, FOP_Chat_Settings::sanitize_key( 'bad' ) );
+		$this->assertCount( 1, FOP_Test_State::$settings_errors );
+		$this->assertSame( 'fop_chat_invalid_key', FOP_Test_State::$settings_errors[0]['code'] );
+	}
+
+	public function test_same_code_on_another_setting_does_not_suppress_ours() {
+		add_settings_error( 'some_other_option', 'fop_chat_invalid_key', 'x', 'error' );
+		FOP_Chat_Settings::sanitize_key( 'bad' );
+		$this->assertCount( 1, get_settings_errors( FOP_CHAT_OPTION ) );
+	}
+
 	public function test_sanitize_invalid_with_no_previous_returns_empty() {
 		$this->assertSame( '', FOP_Chat_Settings::sanitize_key( 'nope' ) );
 		$this->assertCount( 1, FOP_Test_State::$settings_errors );
