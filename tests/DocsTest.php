@@ -37,4 +37,22 @@ class DocsTest extends TestCase {
 			$this->assertStringContainsStringIgnoringCase( $needle, $s, "$file: $needle" );
 		}
 	}
+
+	public function test_readme_headers() {
+		$src = file_get_contents( dirname( __DIR__ ) . '/readme.txt' );
+		$this->assertMatchesRegularExpression( '/^Tested up to:\s*7\.1\s*$/m', $src );
+		$this->assertMatchesRegularExpression( '/^Requires PHP:\s*7\.4\s*$/m', $src );
+		$this->assertMatchesRegularExpression( '/^Stable tag:\s*1\.0\.0\s*$/m', $src );
+	}
+
+	public function test_plugin_and_author_uri_are_distinct_real_pages() {
+		$src = file_get_contents( dirname( __DIR__ ) . '/front-office-pilot-chat.php' );
+		$this->assertMatchesRegularExpression( '#^\s*\*\s*Plugin URI:\s*https://frontofficepilot\.com/chat-pilot/\s*$#m', $src );
+		$this->assertMatchesRegularExpression( '#^\s*\*\s*Author URI:\s*https://frontofficepilot\.com/\s*$#m', $src );
+	}
+
+	public function test_readme_md_has_contributors_todo() {
+		$src = file_get_contents( dirname( __DIR__ ) . '/README.md' );
+		$this->assertMatchesRegularExpression( '/TODO.*Contributors.*WordPress\.org/i', $src );
+	}
 }

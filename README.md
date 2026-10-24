@@ -87,6 +87,11 @@ define( 'FOP_CHAT_SCRIPT_URL', 'https://<service>-<hash>.a.run.app/widget/v1/fop
 The status check derives its config URL from the script's origin, so this one line moves both. Remove it to go back
 to the production URL.
 
+## Before submitting to WordPress.org
+
+- TODO: `Contributors:` in `readme.txt` is the placeholder `frontofficepilot`. It must be a real WordPress.org account
+  username before submission.
+
 ## Development
 
 Requires PHP 7.4+ and Composer. No WordPress install is needed: `tests/bootstrap.php` stubs the WordPress functions the

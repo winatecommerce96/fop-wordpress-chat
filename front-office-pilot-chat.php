@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Front Office Pilot Chat
- * Plugin URI:        https://frontofficepilot.com/
+ * Plugin URI:        https://frontofficepilot.com/chat-pilot/
  * Description:       Adds the Front Office Pilot chat widget to your site. Paste your site key under Settings, Front Office Pilot Chat.
  * Version:           1.0.0
  * Requires at least: 6.4
