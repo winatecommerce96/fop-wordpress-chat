@@ -63,8 +63,9 @@ The plugin itself has no tracking or telemetry, stores no other options, and reg
 - **"Add https://... in your Front Office Pilot dashboard"** after you already added it: addresses are exact.
   `https://example.com` and `https://www.example.com` are separate entries; there is no path, no port and no wildcard.
   Check **Settings → General → Site Address (URL)** matches what you added.
-- **Local or staging sites** on `http://` or with a port (for example `http://localhost:8888`) cannot be added, so they
-  never show as live and the widget stays hidden there.
+- **"The chat widget needs your site on https without a custom port"**: the site address is `http://` or has a port
+  (for example `http://localhost:8888`). Such addresses cannot be added in the dashboard, so the widget stays hidden
+  there and the plugin skips the status check.
 - **The status check failed** (timeout, firewall blocking outbound requests): the page shows the "Add ..." notice.
   The widget on the front end does not depend on this check; open your site in a browser to confirm.
 - **No widget and no script tag in the page source:** check the key is saved, and that a caching or optimisation

@@ -122,7 +122,8 @@ class FOP_Chat_Settings {
 	}
 
 	/**
-	 * Scheme://host[:port] of a URL, lower-cased host, or '' when it cannot be parsed.
+	 * Scheme://host[:port] of a URL, lower-cased, without a default port (443 for https, 80 for http),
+	 * or '' when it cannot be parsed.
 	 *
 	 * @param string $url URL.
 	 * @return string
@@ -132,9 +133,12 @@ class FOP_Chat_Settings {
 		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
 			return '';
 		}
-		$origin = strtolower( $parts['scheme'] ) . '://' . strtolower( $parts['host'] );
-		if ( ! empty( $parts['port'] ) ) {
-			$origin .= ':' . (int) $parts['port'];
+		$scheme  = strtolower( $parts['scheme'] );
+		$origin  = $scheme . '://' . strtolower( $parts['host'] );
+		$port    = empty( $parts['port'] ) ? 0 : (int) $parts['port'];
+		$default = ( 'https' === $scheme && 443 === $port ) || ( 'http' === $scheme && 80 === $port );
+		if ( $port && ! $default ) {
+			$origin .= ':' . $port;
 		}
 		return $origin;
 	}
@@ -146,6 +150,16 @@ class FOP_Chat_Settings {
 	 */
 	public static function site_origin() {
 		return self::origin_of( home_url() );
+	}
+
+	/**
+	 * Whether an origin can be added in the dashboard: https, no custom port.
+	 *
+	 * @param string $origin Origin from site_origin().
+	 * @return bool
+	 */
+	public static function is_supported_origin( $origin ) {
+		return 1 === preg_match( '#^https://[^:/]+$#D', $origin );
 	}
 
 	/**
@@ -163,12 +177,19 @@ class FOP_Chat_Settings {
 
 	/**
 	 * Ask the config endpoint whether this site's origin is enabled for the key.
+	 * An origin that can never be added (http, custom port) is reported without a remote call.
 	 *
 	 * @param string $key Site key.
-	 * @return array{live: bool, origin: string}
+	 * @return array{state: string, origin: string} state is 'live', 'needs_origin' or 'unsupported'.
 	 */
 	public static function check_status( $key ) {
-		$origin   = self::site_origin();
+		$origin = self::site_origin();
+		if ( ! self::is_supported_origin( $origin ) ) {
+			return array(
+				'state'  => 'unsupported',
+				'origin' => $origin,
+			);
+		}
 		$response = wp_remote_get(
 			self::config_url() . '?k=' . rawurlencode( $key ),
 			array(
@@ -182,7 +203,7 @@ class FOP_Chat_Settings {
 			$live = is_array( $data ) && isset( $data['enabled'] ) && true === $data['enabled'];
 		}
 		return array(
-			'live'   => $live,
+			'state'  => $live ? 'live' : 'needs_origin',
 			'origin' => $origin,
 		);
 	}
@@ -193,7 +214,13 @@ class FOP_Chat_Settings {
 	 * @param array $status Result of check_status().
 	 */
 	public static function render_status( $status ) {
-		if ( ! empty( $status['live'] ) ) {
+		if ( 'unsupported' === $status['state'] ) {
+			/* translators: %s: site origin, e.g. http://shop.example.com */
+			$message = sprintf( __( 'The chat widget needs your site on https without a custom port; %s can\'t be added.', 'front-office-pilot-chat' ), $status['origin'] );
+			echo '<div class="notice notice-error inline"><p>' . esc_html( $message ) . '</p></div>';
+			return;
+		}
+		if ( 'live' === $status['state'] ) {
 			/* translators: %s: site origin, e.g. https://shop.example.com */
 			$message = sprintf( __( 'Chat is live on %s.', 'front-office-pilot-chat' ), $status['origin'] );
 			echo '<div class="notice notice-success inline"><p>' . esc_html( $message ) . '</p></div>';
