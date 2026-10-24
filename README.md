@@ -75,18 +75,6 @@ The plugin itself has no tracking or telemetry, stores no other options, and reg
   plugin is not stripping or delaying the `fop-chat` script. Clear page caches after saving.
 - **Widget appears twice?** It cannot: the widget mounts once per page even if the tag is duplicated.
 
-## Testing against a run.app deployment
-
-Before `chat.frontofficepilot.com` is mapped, point the plugin at the Cloud Run URL by adding this to
-`wp-config.php` (above "That's all, stop editing!"):
-
-```php
-define( 'FOP_CHAT_SCRIPT_URL', 'https://<service>-<hash>.a.run.app/widget/v1/fop-chat.js' );
-```
-
-The status check derives its config URL from the script's origin, so this one line moves both. Remove it to go back
-to the production URL.
-
 ## Before submitting to WordPress.org
 
 - TODO: `Contributors:` in `readme.txt` is the placeholder `frontofficepilot`. It must be a real WordPress.org account
