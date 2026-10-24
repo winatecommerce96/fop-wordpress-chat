@@ -55,4 +55,11 @@ class DocsTest extends TestCase {
 		$src = file_get_contents( dirname( __DIR__ ) . '/README.md' );
 		$this->assertMatchesRegularExpression( '/TODO.*Contributors.*WordPress\.org/i', $src );
 	}
+
+	public function test_gplv2_license_file() {
+		$src = file_get_contents( dirname( __DIR__ ) . '/LICENSE' );
+		$this->assertStringContainsString( 'GNU GENERAL PUBLIC LICENSE', $src );
+		$this->assertStringContainsString( 'Version 2, June 1991', $src );
+		$this->assertStringContainsString( 'END OF TERMS AND CONDITIONS', $src );
+	}
 }

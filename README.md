@@ -110,7 +110,7 @@ Build the release zip (version read from the `front-office-pilot-chat.php` heade
 bin/build-zip.sh   # -> dist/front-office-pilot-chat-<version>.zip
 ```
 
-The zip has one top-level `front-office-pilot-chat/` folder with `front-office-pilot-chat.php`, `uninstall.php`, `readme.txt` and
+The zip has one top-level `front-office-pilot-chat/` folder with `front-office-pilot-chat.php`, `uninstall.php`, `readme.txt`, `LICENSE` and
 `includes/` only.
 
 ## Screenshots

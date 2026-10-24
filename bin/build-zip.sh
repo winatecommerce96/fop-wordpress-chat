@@ -13,7 +13,7 @@ if [ -z "$VERSION" ]; then
 fi
 
 # Runtime files only (allowlist).
-FILES="front-office-pilot-chat.php uninstall.php readme.txt includes"
+FILES="front-office-pilot-chat.php uninstall.php readme.txt LICENSE includes"
 
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT

@@ -23,6 +23,7 @@ class BuildZipTest extends TestCase {
 		sort( $names );
 		$this->assertSame(
 			array(
+				'front-office-pilot-chat/LICENSE',
 				'front-office-pilot-chat/front-office-pilot-chat.php',
 				'front-office-pilot-chat/includes/class-fop-chat-embed.php',
 				'front-office-pilot-chat/includes/class-fop-chat-settings.php',
