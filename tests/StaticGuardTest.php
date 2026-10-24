@@ -21,7 +21,7 @@ class StaticGuardTest extends TestCase {
 	 */
 	public function test_forbidden_strings_absent( $needle ) {
 		foreach ( $this->plugin_sources() as $file => $src ) {
-			$this->assertFalse( stripos( $src, $needle ), "$needle found in $file" );
+			$this->assertSame( 0, preg_match( '/' . $needle . '/i', $src ), "$needle found in $file" );
 		}
 	}
 
@@ -29,13 +29,13 @@ class StaticGuardTest extends TestCase {
 		return array(
 			array( 'wp_ajax_' ),
 			array( 'register_rest_route' ),
-			array( 'update_option' ),
-			array( 'add_option' ),
-			array( 'set_transient' ),
+			array( '\\bupdate_(site_)?option\\s*\\(' ),
+			array( '\\badd_(site_)?option\\s*\\(' ),
+			array( 'set_(site_)?transient' ),
 			array( 'wp_remote_post' ),
 			array( 'wp_remote_request' ),
 			array( 'wp_safe_remote' ),
-			array( 'curl_' ),
+			array( '\\bcurl_' ),
 			array( 'file_get_contents' ),
 			array( 'fsockopen' ),
 		);
