@@ -1,18 +1,13 @@
 # Front Office Pilot Chat (WordPress plugin)
 
-Adds the Front Office Pilot chat widget to a WordPress site (WordPress 6.4+, PHP 7.4+). The site owner pastes a site
-key; the plugin enqueues the hosted script with `strategy => async` in the footer and adds `data-site-key` through the
-`wp_script_attributes` filter, so WordPress prints
+Puts your [Front Office Pilot](https://frontofficepilot.com/) AI chat assistant on your WordPress site. Visitors get a
+chat bubble that answers from your business's own knowledge, around the clock.
 
-```html
-<script src="https://chat.frontofficepilot.com/widget/v1/fop-chat.js" id="fop-chat-js" async data-wp-strategy="async" data-site-key="fop_pk_..."></script>
-```
+You need a Front Office Pilot account. Your site key, the list of website addresses allowed to show the chat, and the
+download link for this plugin are all on your dashboard's **Chat widget** page:
+https://app.frontofficepilot.com/chat-widget
 
-in the footer of every front-end page. That is the whole plugin: one setting, one script tag, and a status check on
-its own settings page.
-
-The plugin slug and text domain are `front-office-pilot-chat` (main file `front-office-pilot-chat.php`); WordPress.org
-does not accept "wordpress" in a slug. The GitHub repository keeps the name `fop-wordpress-chat`.
+Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
 
 ## Install
 
@@ -75,12 +70,20 @@ The plugin itself has no tracking or telemetry, stores no other options, and reg
   plugin is not stripping or delaying the `fop-chat` script. Clear page caches after saving.
 - **Widget appears twice?** It cannot: the widget mounts once per page even if the tag is duplicated.
 
-## Before submitting to WordPress.org
-
-- TODO: `Contributors:` in `readme.txt` is the placeholder `frontofficepilot`. It must be a real WordPress.org account
-  username before submission.
-
 ## Development
+
+### How it works
+
+The plugin enqueues the hosted script with `strategy => async` in the footer and adds `data-site-key` through the
+`wp_script_attributes` filter, so WordPress prints
+
+```html
+<script src="https://chat.frontofficepilot.com/widget/v1/fop-chat.js" id="fop-chat-js" async data-wp-strategy="async" data-site-key="fop_pk_..."></script>
+```
+
+on every front-end page. That is the whole plugin: one setting, one script tag, and a status check on its own settings
+page. The plugin slug and text domain are `front-office-pilot-chat`; the GitHub repository is `fop-wordpress-chat`.
+
 
 Requires PHP 7.4+ and Composer. No WordPress install is needed: `tests/bootstrap.php` stubs the WordPress functions the
 plugin uses.
@@ -100,21 +103,3 @@ bin/build-zip.sh   # -> dist/front-office-pilot-chat-<version>.zip
 
 The zip has one top-level `front-office-pilot-chat/` folder with `front-office-pilot-chat.php`, `uninstall.php`, `readme.txt`, `LICENSE` and
 `includes/` only.
-
-## Screenshots
-
-Settings page, no key saved:
-
-![Settings, empty](docs/screenshots/settings-empty.png)
-
-Settings page, key saved and the site is live:
-
-![Settings, live](docs/screenshots/settings-live.png)
-
-Settings page, key saved but the site address still needs adding in the dashboard:
-
-![Settings, needs origin](docs/screenshots/settings-needs-origin.png)
-
-The widget on the front end:
-
-![Widget on the front end](docs/screenshots/widget-front-end.png)
