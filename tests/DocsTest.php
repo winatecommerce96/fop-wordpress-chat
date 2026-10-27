@@ -51,9 +51,12 @@ class DocsTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#^\s*\*\s*Author URI:\s*https://frontofficepilot\.com/\s*$#m', $src );
 	}
 
-	public function test_readme_md_has_contributors_todo() {
+	public function test_readme_md_starts_with_what_a_site_owner_needs() {
 		$src = file_get_contents( dirname( __DIR__ ) . '/README.md' );
-		$this->assertMatchesRegularExpression( '/TODO.*Contributors.*WordPress\.org/i', $src );
+		$intro = substr( $src, 0, strpos( $src, '## Install' ) );
+		$this->assertStringContainsString( 'https://app.frontofficepilot.com/chat-widget', $intro );
+		$this->assertStringContainsString( 'WordPress 6.4+', $intro );
+		$this->assertStringNotContainsString( 'docs/screenshots/', $src );
 	}
 
 	public function test_gplv2_license_file() {
