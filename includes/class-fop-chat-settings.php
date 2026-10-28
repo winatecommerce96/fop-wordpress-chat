@@ -246,7 +246,7 @@ class FOP_Chat_Settings {
 			return;
 		}
 		/* translators: %s: site origin, e.g. https://shop.example.com */
-		$message = sprintf( __( 'Add %s in your Front Office Pilot dashboard under Chat widget.', 'front-office-pilot-chat' ), $status['origin'] );
+		$message = sprintf( __( 'Add %s in your Front Office Pilot dashboard under Website chat.', 'front-office-pilot-chat' ), $status['origin'] );
 		echo '<div class="notice notice-warning inline"><p>' . esc_html( $message ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'front-office-pilot-chat' ) . '</a></p></div>';
 	}
 
@@ -260,7 +260,7 @@ class FOP_Chat_Settings {
 			esc_attr( FOP_CHAT_OPTION ),
 			esc_attr( is_string( $value ) ? $value : '' )
 		);
-		echo '<p class="description">' . esc_html__( 'Find your site key in your Front Office Pilot dashboard under Chat widget. Leave empty to remove the chat widget.', 'front-office-pilot-chat' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Find your site key in your Front Office Pilot dashboard under Website chat. Leave empty to remove the chat widget.', 'front-office-pilot-chat' ) . '</p>';
 	}
 
 	/**

@@ -104,10 +104,10 @@ class StatusCheckTest extends TestCase {
 		ob_start();
 		FOP_Chat_Settings::render_status( array( 'state' => 'needs_origin', 'origin' => 'https://shop.example.com' ) );
 		$out = ob_get_clean();
-		$this->assertStringContainsString( 'Add https://shop.example.com in your Front Office Pilot dashboard under Chat widget.', $out );
+		$this->assertStringContainsString( 'Add https://shop.example.com in your Front Office Pilot dashboard under Website chat.', $out );
 		$this->assertStringContainsString( 'href="https://app.frontofficepilot.com/chat-widget"', $out );
 		$this->assertContains( FOP_CHAT_DASHBOARD_URL, FOP_Test_State::$esc_calls['esc_url'] );
-		$this->assertContains( 'Add https://shop.example.com in your Front Office Pilot dashboard under Chat widget.', FOP_Test_State::$esc_calls['esc_html'] );
+		$this->assertContains( 'Add https://shop.example.com in your Front Office Pilot dashboard under Website chat.', FOP_Test_State::$esc_calls['esc_html'] );
 	}
 
 	/**
@@ -144,7 +144,7 @@ class StatusCheckTest extends TestCase {
 		$this->assertStringContainsString( htmlspecialchars( $msg, ENT_QUOTES, 'UTF-8' ), $out );
 		$this->assertContains( $msg, FOP_Test_State::$esc_calls['esc_html'] );
 		$this->assertStringNotContainsString( 'Chat is live', $out );
-		$this->assertStringNotContainsString( 'under Chat widget.', $out );
+		$this->assertStringNotContainsString( 'under Website chat.', $out );
 	}
 
 	public function test_on_load_unsupported_shows_notice_and_no_call() {
@@ -190,7 +190,7 @@ class StatusCheckTest extends TestCase {
 		ob_start();
 		FOP_Chat_Settings::render_page();
 		$out = ob_get_clean();
-		$this->assertStringContainsString( 'under Chat widget.', $out );
+		$this->assertStringContainsString( 'under Website chat.', $out );
 	}
 
 	public function test_override_moves_both_urls() {

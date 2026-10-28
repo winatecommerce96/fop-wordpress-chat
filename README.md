@@ -4,7 +4,7 @@ Puts your [Front Office Pilot](https://frontofficepilot.com/) AI chat assistant 
 chat bubble that answers from your business's own knowledge, around the clock.
 
 You need a Front Office Pilot account. Your site key, the list of website addresses allowed to show the chat, and the
-download link for this plugin are all on your dashboard's **Chat widget** page:
+download link for this plugin are all on your dashboard's **Website chat** page:
 https://app.frontofficepilot.com/chat-widget
 
 Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
@@ -14,11 +14,11 @@ Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
 1. Download `front-office-pilot-chat-<version>.zip` (or build it, see below).
 2. In WordPress: **Plugins → Add New → Upload Plugin**, choose the zip, **Install Now**, then **Activate**.
 3. Go to **Settings → Front Office Pilot Chat**.
-4. Paste your site key (from your Front Office Pilot dashboard under Chat widget; it looks like `fop_pk_` plus 32
+4. Paste your site key (from your Front Office Pilot dashboard under Website chat; it looks like `fop_pk_` plus 32
    letters and numbers) and click **Save Changes**.
 5. The page now shows one of two notices:
    - **"Chat is live on https://your-site."** You are done.
-   - **"Add https://your-site in your Front Office Pilot dashboard under Chat widget."** Open
+   - **"Add https://your-site in your Front Office Pilot dashboard under Website chat."** Open
      <https://app.frontofficepilot.com/chat-widget>, add that exact address, save, and reload the settings page.
 
 To remove the widget, clear the field and save, or deactivate the plugin. Deleting the plugin removes its option

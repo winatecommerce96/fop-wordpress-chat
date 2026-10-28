@@ -45,17 +45,17 @@ Privacy policy: https://vapi.ai/privacy
 1. Upload the plugin zip under Plugins, Add New, Upload Plugin, and activate it.
 2. Go to Settings, Front Office Pilot Chat.
 3. Paste your site key (it starts with `fop_pk_`) and save.
-4. If the page says to add your site, open your Front Office Pilot dashboard under Chat widget and add your site address (for example `https://www.example.com`).
+4. If the page says to add your site, open your Front Office Pilot dashboard under Website chat and add your site address (for example `https://www.example.com`).
 
 == Frequently Asked Questions ==
 
 = Where do I find my site key? =
 
-In your Front Office Pilot dashboard under Chat widget.
+In your Front Office Pilot dashboard under Website chat.
 
 = I saved my key but the widget does not show =
 
-Your site address must be added in your Front Office Pilot dashboard under Chat widget. Addresses are exact: `https://example.com` and `https://www.example.com` are added separately, and sites on `http://` or with a port number are not supported.
+Your site address must be added in your Front Office Pilot dashboard under Website chat. Addresses are exact: `https://example.com` and `https://www.example.com` are added separately, and sites on `http://` or with a port number are not supported.
 
 = Is the site key secret? =
 
