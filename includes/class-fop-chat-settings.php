@@ -247,7 +247,7 @@ class FOP_Chat_Settings {
 		}
 		/* translators: %s: site origin, e.g. https://shop.example.com */
 		$message = sprintf( __( 'Add %s in your Front Office Pilot dashboard under Website chat.', 'front-office-pilot-chat' ), $status['origin'] );
-		echo '<div class="notice notice-warning inline"><p>' . esc_html( $message ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'front-office-pilot-chat' ) . '</a></p></div>';
+		echo '<div class="notice notice-warning inline"><p>' . esc_html( $message ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Website chat settings', 'front-office-pilot-chat' ) . '</a></p></div>';
 	}
 
 	/**
@@ -280,7 +280,7 @@ class FOP_Chat_Settings {
 		do_settings_sections( self::PAGE_SLUG );
 		submit_button();
 		echo '</form>';
-		echo '<p>' . esc_html__( 'The chat widget only appears on sites you have added in your dashboard.', 'front-office-pilot-chat' ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Chat widget settings', 'front-office-pilot-chat' ) . '</a></p>';
+		echo '<p>' . esc_html__( 'The chat widget only appears on sites you have added in your dashboard.', 'front-office-pilot-chat' ) . ' <a href="' . esc_url( FOP_CHAT_DASHBOARD_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open Website chat settings', 'front-office-pilot-chat' ) . '</a></p>';
 		echo '</div>';
 	}
 }
