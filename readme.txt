@@ -42,6 +42,10 @@ Privacy policy: https://vapi.ai/privacy
 
 == Installation ==
 
+If you downloaded the plugin from your Front Office Pilot dashboard (Website chat), your site key is already in it: upload the zip under Plugins, Add New, Upload Plugin (choose "Replace current with uploaded" if asked), activate it, and you are done.
+
+Otherwise:
+
 1. Upload the plugin zip under Plugins, Add New, Upload Plugin, and activate it.
 2. Go to Settings, Front Office Pilot Chat.
 3. Paste your site key (it starts with `fop_pk_`) and save.
@@ -64,7 +68,7 @@ No. It is a publishable key and appears in your page HTML. It cannot change your
 == Changelog ==
 
 = 1.1.0 =
-* A plugin downloaded from your Front Office Pilot dashboard has your site key built in. It is saved once, on activation; a key you already saved always wins, and a key you clear stays cleared.
+* A plugin downloaded from your Front Office Pilot dashboard has your site key built in. It is saved once, when you activate the plugin or open any admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a multisite network, a network-activated plugin never imports a bundled key; paste each site's key instead.
 
 = 1.0.0 =
 * First release.

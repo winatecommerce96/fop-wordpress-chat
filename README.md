@@ -13,7 +13,8 @@ Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
 
 **From your dashboard (easiest).** On the **Website chat** page, click **Download for WordPress**. That zip has your
 site key built in: upload it (**Plugins → Add New → Upload Plugin → Install Now**; choose **Replace current with
-uploaded** if WordPress asks), click **Activate**, and you are done. The key is saved once, on activation; a key you
+uploaded** if WordPress asks), click **Activate**, and you are done. The key is saved once, when you activate it or open any admin page after replacing it (never from a network
+activation on multisite); a key you
 already saved always wins, and a key you clear stays cleared. The generic release zip below has no key in it.
 
 **From the release zip:**
@@ -59,7 +60,7 @@ Two external services are involved. Nothing is sent until a site key is saved.
   sends nothing to Vapi.
 - Terms: <https://vapi.ai/terms-of-service>. Privacy: <https://vapi.ai/privacy>.
 
-The plugin itself has no tracking or telemetry, stores no other options, and registers no AJAX or REST endpoints.
+The plugin itself has no tracking or telemetry, stores only two options (the site key and a one-time import marker), and registers no AJAX or REST endpoints.
 
 ## Troubleshooting
 

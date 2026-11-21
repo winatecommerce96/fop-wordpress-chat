@@ -33,6 +33,7 @@ class FOP_Test_State {
 	public static $sites = array( 1 );
 	public static $updates = array();
 	public static $activation = array();
+	public static $network_active = array();
 
 	public static function reset() {
 		self::$options               = array();
@@ -53,6 +54,7 @@ class FOP_Test_State {
 		self::$sites                 = array( 1 );
 		self::$updates               = array();
 		self::$activation            = array();
+		self::$network_active        = array();
 	}
 }
 
@@ -84,6 +86,12 @@ function update_option( $name, $value, $autoload = null ) {
 	FOP_Test_State::$options[ FOP_Test_State::$blog_id ][ $name ] = $value;
 	FOP_Test_State::$updates[] = array( $name, $value );
 	return true;
+}
+function plugin_basename( $file ) {
+	return basename( dirname( $file ) ) . '/' . basename( $file );
+}
+function is_plugin_active_for_network( $plugin ) {
+	return in_array( $plugin, FOP_Test_State::$network_active, true );
 }
 function register_activation_hook( $file, $callback ) {
 	FOP_Test_State::$activation[] = array( $file, $callback );

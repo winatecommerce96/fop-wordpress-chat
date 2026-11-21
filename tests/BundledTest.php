@@ -80,7 +80,45 @@ class BundledTest extends TestCase {
 			'markup in the key' => array( "return array( 'site_key' => 'fop_pk_BBBB\"><script>' );" ),
 			'not a string'      => array( "return array( 'site_key' => 42 );" ),
 			'returns nothing'   => array( '' ),
+			'syntax error'      => array( "return array( 'site_key' => 'fop_pk_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB' " ),
+			'prints output'     => array( "echo 'x';\nreturn array( 'site_key' => 'fop_pk_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB' );" ),
+			'throws'            => array( "throw new RuntimeException( 'boom' );" ),
 		);
+	}
+
+	public function test_a_bom_before_the_php_tag_writes_nothing_and_prints_nothing() {
+		$path = $this->dir . '/fop-config.php';
+		file_put_contents( $path, "\xEF\xBB\xBF<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
+		ob_start();
+		FOP_Chat_Bundled::import( $path );
+		$this->assertSame( '', ob_get_clean() );
+		$this->assertSame( array(), FOP_Test_State::$updates );
+	}
+
+	public function test_a_network_activation_imports_nowhere() {
+		$real = FOP_CHAT_BUNDLED_CONFIG;
+		$this->assertFileDoesNotExist( $real, 'a developer fop-config.php is in the plugin root' );
+		file_put_contents( $real, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
+		try {
+			FOP_Test_State::$multisite = true;
+			FOP_Chat_Bundled::on_hook( true );                                 // activate_{plugin} with $network_wide
+			$this->assertSame( array(), FOP_Test_State::$updates );
+			FOP_Test_State::$network_active = array( plugin_basename( FOP_CHAT_MAIN_FILE ) );
+			FOP_Chat_Bundled::on_hook();                                       // admin_init on a subsite
+			$this->assertSame( array(), FOP_Test_State::$updates );
+			FOP_Test_State::$network_active = array();
+			FOP_Chat_Bundled::on_hook();                                       // activated on this one site only
+			$this->assertSame( self::KEY, $this->option( FOP_CHAT_OPTION ) );
+		} finally {
+			unlink( $real );
+		}
+	}
+
+	public function test_a_per_site_activation_on_a_network_still_imports() {
+		FOP_Test_State::$multisite = true;
+		$path = $this->config( "return array( 'site_key' => '" . self::KEY . "' );" );
+		FOP_Chat_Bundled::import( $path );
+		$this->assertSame( self::KEY, $this->option( FOP_CHAT_OPTION ) );
 	}
 
 	public function test_the_import_runs_on_activation_and_on_admin_init() {
@@ -100,15 +138,34 @@ class BundledTest extends TestCase {
 		}
 	}
 
+	public function test_the_notice_goes_once_the_owner_pastes_another_key() {
+		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ]         = self::OTHER;
+		FOP_Test_State::$options[1][ FOP_CHAT_BUNDLED_OPTION ] = 'imported';
+		$this->assertFalse( FOP_Chat_Bundled::key_was_imported() );          // the plugin's own fop-config.php is absent
+	}
+
 	public function test_the_settings_page_says_where_an_imported_key_came_from() {
-		FOP_Chat_Bundled::import( $this->config( "return array( 'site_key' => '" . self::KEY . "' );" ) );
+		$real = FOP_CHAT_BUNDLED_CONFIG;
+		$this->assertFileDoesNotExist( $real, 'a developer fop-config.php is in the plugin root' );
+		file_put_contents( $real, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
+		try {
+			FOP_Chat_Bundled::import( $real );
+			$this->assertTrue( FOP_Chat_Bundled::key_was_imported() );
+			$this->assertStringContainsString( 'Added from your Front Office Pilot download.', $this->page() );
+			FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = '';                      // cleared
+			$this->assertStringNotContainsString( 'Added from your', $this->page() );
+		} finally {
+			unlink( $real );
+		}
+	}
+
+	private function page() {
 		ob_start();
-		FOP_Chat_Settings::render_page();
-		$html = ob_get_clean();
-		$this->assertStringContainsString( 'Added from your Front Office Pilot download.', $html );
-		FOP_Test_State::$options[1][ FOP_CHAT_OPTION ] = '';
-		ob_start();
-		FOP_Chat_Settings::render_page();
-		$this->assertStringNotContainsString( 'Added from your', ob_get_clean() );
+		try {
+			FOP_Chat_Settings::render_page();
+		} finally {
+			$html = ob_get_clean();
+		}
+		return $html;
 	}
 }

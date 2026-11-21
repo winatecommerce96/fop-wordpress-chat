@@ -9,6 +9,9 @@ class BuildZipTest extends TestCase {
 		$root = dirname( __DIR__ );
 		// A per-site fop-config.php left in the working tree must never reach the generic zip.
 		$stray = $root . '/fop-config.php';
+		if ( file_exists( $stray ) ) {
+			$this->markTestSkipped( 'a developer fop-config.php is in the plugin root; not touching it' );
+		}
 		file_put_contents( $stray, "<?php return array( 'site_key' => 'fop_pk_DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD' );\n" );
 		try {
 			$out = trim( (string) shell_exec( escapeshellarg( $root . '/bin/build-zip.sh' ) . ' 2>&1' ) );

@@ -29,10 +29,32 @@ class FOP_Chat_Bundled {
 	}
 
 	/**
-	 * Hook callback: import from the plugin's own fop-config.php. Ignores hook arguments.
+	 * Hook callback: import from the plugin's own fop-config.php. Never while the plugin is network-active: one site's
+	 * download must not hand its key to every site of a network (activation runs once with $network_wide = true, and
+	 * admin_init then fires on each subsite, even on logged-out admin-ajax requests).
+	 *
+	 * @param bool $network_wide True on a network activation.
 	 */
-	public static function on_hook() {
+	public static function on_hook( $network_wide = false ) {
+		if ( true === $network_wide || self::network_active() ) {
+			return;
+		}
 		self::import( FOP_CHAT_BUNDLED_CONFIG );
+	}
+
+	/**
+	 * Whether this plugin is network-activated on a multisite install.
+	 *
+	 * @return bool
+	 */
+	private static function network_active() {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		return is_plugin_active_for_network( plugin_basename( FOP_CHAT_MAIN_FILE ) );
 	}
 
 	/**
@@ -45,7 +67,19 @@ class FOP_Chat_Bundled {
 		if ( ! is_string( $path ) || ! is_file( $path ) || ! is_readable( $path ) ) {
 			return '';
 		}
-		$config = include $path;
+		// A truncated file (ParseError) or stray bytes (a BOM, text after a closing tag) must never fatal wp-admin or print into
+		// a redirect or an admin-ajax reply: any error or output reads as "no bundled key".
+		ob_start();
+		try {
+			$config = include $path;
+		} catch ( \Throwable $e ) {
+			$config = null;
+		} finally {
+			$printed = ob_get_clean();
+		}
+		if ( '' !== (string) $printed ) {
+			return '';
+		}
 		if ( ! is_array( $config ) || ! isset( $config['site_key'] ) ) {
 			return '';
 		}
@@ -58,6 +92,9 @@ class FOP_Chat_Bundled {
 	 * @param string $path Path of fop-config.php.
 	 */
 	public static function import( $path ) {
+		if ( ! is_string( $path ) || ! is_file( $path ) ) {
+			return;                                         // a generic install: no lookup at all
+		}
 		if ( '' !== (string) get_option( FOP_CHAT_BUNDLED_OPTION, '' ) ) {
 			return;                                         // already decided once: never again
 		}
@@ -79,7 +116,10 @@ class FOP_Chat_Bundled {
 	 * @return bool
 	 */
 	public static function key_was_imported() {
-		return 'imported' === get_option( FOP_CHAT_BUNDLED_OPTION, '' )
-			&& FOP_Chat_Settings::is_valid_key( get_option( FOP_CHAT_OPTION, '' ) );
+		if ( 'imported' !== get_option( FOP_CHAT_BUNDLED_OPTION, '' ) ) {
+			return false;
+		}
+		$key = get_option( FOP_CHAT_OPTION, '' );
+		return FOP_Chat_Settings::is_valid_key( $key ) && self::bundled_key( FOP_CHAT_BUNDLED_CONFIG ) === $key;
 	}
 }

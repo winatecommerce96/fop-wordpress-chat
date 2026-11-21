@@ -46,8 +46,8 @@ class StaticGuardTest extends TestCase {
 	 */
 	public function test_options_are_written_only_by_the_bundled_import() {
 		foreach ( $this->plugin_sources() as $file => $src ) {
-			preg_match_all( '/\\bupdate_(?:site_)?option\\s*\\(\\s*([A-Z_]+)/', $src, $m );
-			$all = preg_match_all( '/\\bupdate_(?:site_)?option\\s*\\(/', $src );
+			preg_match_all( '/\\bupdate_(?:site_|network_|blog_)?option\\s*\\(\\s*([A-Z_]+)/i', $src, $m );
+			$all = preg_match_all( '/\\bupdate_(?:site_|network_|blog_)?option\\s*\\(/i', $src );
 			if ( 'class-fop-chat-bundled.php' !== basename( $file ) ) {
 				$this->assertSame( 0, $all, "update_option in $file" );
 				continue;
@@ -56,6 +56,23 @@ class StaticGuardTest extends TestCase {
 			$this->assertSame( count( $m[1] ), $all, 'every write names an option constant' );
 			foreach ( $m[1] as $name ) {
 				$this->assertContains( $name, array( 'FOP_CHAT_OPTION', 'FOP_CHAT_BUNDLED_OPTION' ) );
+			}
+		}
+	}
+
+	public function test_the_marker_option_name_matches_uninstall() {
+		$this->assertSame( 'fop_chat_bundled_import', FOP_CHAT_BUNDLED_OPTION );
+		$this->assertSame( 2, substr_count( file_get_contents( dirname( __DIR__ ) . '/uninstall.php' ), "delete_option( 'fop_chat_bundled_import' )" ) );
+	}
+
+	public function test_the_import_only_ever_reads_the_plugins_own_config_file() {
+		foreach ( $this->plugin_sources() as $file => $src ) {
+			preg_match_all( '/\\bimport\\(\\s*([^)]*)\\)/', $src, $m );
+			foreach ( $m[1] as $arg ) {
+				if ( 'class-fop-chat-bundled.php' === basename( $file ) && '$path' === trim( $arg ) ) {
+					continue;                                               // the definition itself
+				}
+				$this->assertSame( 'FOP_CHAT_BUNDLED_CONFIG', trim( $arg ), "import( $arg ) in $file" );
 			}
 		}
 	}
