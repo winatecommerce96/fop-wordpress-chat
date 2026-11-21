@@ -18,6 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FOP_Chat_Bundled {
 
+	const MAX_BYTES = 2048;
+	const KEY_LINE  = "/^return array\\( 'site_key' => '(fop_pk_[A-Za-z0-9]{32})' \\);\\r?$/m";
+
 	/**
 	 * Import on activation (a fresh install) and on admin_init (an upload that replaces an existing copy).
 	 *
@@ -45,38 +48,29 @@ class FOP_Chat_Bundled {
 	}
 
 	/**
-	 * The site key a bundled config file holds, or '' when it is missing or malformed.
+	 * The site key a bundled config file holds, or '' when it is missing or not in the dashboard's exact format.
+	 *
+	 * The file is READ, never executed: no include, so a truncated or hand-edited file can never fatal wp-admin, print
+	 * output or touch output buffers. It must be at most MAX_BYTES, start with "<?php" and a newline (no BOM), and
+	 * hold exactly one `return array( 'site_key' => 'fop_pk_...' );` line. It stays valid PHP (with the ABSPATH guard),
+	 * so a direct request for it prints nothing.
 	 *
 	 * @param string $path Path of fop-config.php (always the plugin's own; never from a request).
 	 * @return string
 	 */
 	private static function bundled_key( $path ) {
-		if ( ! is_string( $path ) || ! is_file( $path ) || ! is_readable( $path ) ) {
+		if ( ! is_string( $path ) || ! is_file( $path ) || ! is_readable( $path ) || filesize( $path ) > self::MAX_BYTES ) {
 			return '';
 		}
-		// A truncated file (ParseError), an exception or stray bytes (a BOM, text after a closing tag) read as "no
-		// bundled key", and the output never reaches a redirect or an admin-ajax reply. (exit/die or an uncatchable
-		// fatal cannot be caught; the dashboard generates the file, so neither occurs.)
-		$level = ob_get_level();
-		ob_start();
-		try {
-			$config = include $path;
-		} catch ( \Throwable $e ) {
-			$config = null;
-		} finally {
-			$touched = ob_get_level() !== $level + 1;       // the file opened or closed a buffer itself
-			while ( ob_get_level() > $level + 1 ) {
-				ob_end_clean();                             // buffers the file opened and left open
-			}
-			$printed = ob_get_level() > $level ? ob_get_clean() : false;   // false: the file closed our buffer
-		}
-		if ( $touched || '' !== $printed ) {
+		$text = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file in the plugin's own folder.
+		if ( ! is_string( $text ) || 0 !== strpos( $text, "<?php\n" ) ) {
 			return '';
 		}
-		if ( ! is_array( $config ) || ! isset( $config['site_key'] ) ) {
+		$found = preg_match_all( self::KEY_LINE, $text, $m );
+		if ( 1 !== $found ) {
 			return '';
 		}
-		return FOP_Chat_Settings::is_valid_key( $config['site_key'] ) ? $config['site_key'] : '';
+		return FOP_Chat_Settings::is_valid_key( $m[1][0] ) ? $m[1][0] : '';
 	}
 
 	/**

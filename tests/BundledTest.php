@@ -81,7 +81,8 @@ class BundledTest extends TestCase {
 			'not a string'      => array( "return array( 'site_key' => 42 );" ),
 			'returns nothing'   => array( '' ),
 			'syntax error'      => array( "return array( 'site_key' => 'fop_pk_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB' " ),
-			'prints output'     => array( "echo 'x';\nreturn array( 'site_key' => 'fop_pk_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB' );" ),
+			'two keys'          => array( "return array( 'site_key' => 'fop_pk_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB' );\nreturn array( 'site_key' => 'fop_pk_CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC' );" ),
+			'key line indented' => array( "  return array( 'site_key' => 'fop_pk_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB' );" ),
 			'throws'            => array( "throw new RuntimeException( 'boom' );" ),
 		);
 	}
@@ -97,7 +98,7 @@ class BundledTest extends TestCase {
 
 	private function real_config() {
 		$real = FOP_CHAT_BUNDLED_CONFIG;
-		if ( file_exists( $real ) ) {
+		if ( file_exists( $real ) || ! is_writable( dirname( $real ) ) ) {
 			$this->markTestSkipped( 'a developer fop-config.php is in the plugin root; not touching it' );
 		}
 		file_put_contents( $real, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
@@ -119,15 +120,36 @@ class BundledTest extends TestCase {
 		}
 	}
 
-	public function test_a_file_that_closes_our_buffer_or_opens_its_own_is_no_key() {
+	public function test_the_file_is_read_never_run() {
+		$path = $this->config( "echo 'LEAK';\nob_start( null, 0, 0 );\nthrow new RuntimeException( 'boom' );\nreturn array( 'site_key' => '" . self::KEY . "' );" );
 		$level = ob_get_level();
 		ob_start();
-		echo 'PAGE';
-		FOP_Chat_Bundled::import( $this->config( "ob_end_clean();\nreturn array( 'site_key' => '" . self::KEY . "' );" ) );
-		FOP_Chat_Bundled::import( $this->config( "ob_start();\nreturn array( 'site_key' => '" . self::KEY . "' );" ) );
-		$this->assertSame( $level + 1, ob_get_level() );                    // no buffer left open, none of ours taken
-		$this->assertSame( 'PAGE', ob_get_clean() );                          // the caller's output survives
+		FOP_Chat_Bundled::import( $path );
+		$this->assertSame( '', ob_get_clean() );                               // nothing printed, nothing thrown
+		$this->assertSame( $level, ob_get_level() );                          // no buffer opened
+		$this->assertSame( self::KEY, $this->option( FOP_CHAT_OPTION ) );     // the key line is all that counts
+	}
+
+	public function test_an_oversized_file_is_no_key() {
+		FOP_Chat_Bundled::import( $this->config( str_repeat( "// padding\n", 300 ) . "return array( 'site_key' => '" . self::KEY . "' );" ) );
 		$this->assertSame( array(), FOP_Test_State::$updates );
+	}
+
+	public function test_windows_line_endings_still_import() {
+		$path = $this->dir . '/fop-config.php';
+		file_put_contents( $path, "<?php\r\nif ( ! defined( 'ABSPATH' ) ) {\r\n\texit;\r\n}\r\nreturn array( 'site_key' => '" . self::KEY . "' );\r\n" );
+		FOP_Chat_Bundled::import( $path );
+		$this->assertSame( array(), FOP_Test_State::$updates );               // "<?php\n" is required: CRLF is not ours
+	}
+
+	public function test_the_import_runs_on_activation_and_on_admin_init() {
+		$this->assertSame( dirname( __DIR__ ) . '/fop-config.php', FOP_CHAT_BUNDLED_CONFIG );
+		FOP_Chat_Bundled::init( dirname( __DIR__ ) . '/front-office-pilot-chat.php' );
+		$this->assertSame(
+			array( array( dirname( __DIR__ ) . '/front-office-pilot-chat.php', array( 'FOP_Chat_Bundled', 'on_hook' ) ) ),
+			FOP_Test_State::$activation
+		);
+		$this->assertContains( array( 'FOP_Chat_Bundled', 'on_hook' ), FOP_Test_State::$actions['admin_init'] );
 	}
 
 	public function test_the_notice_goes_once_the_owner_pastes_another_key() {

@@ -35,7 +35,6 @@ class StaticGuardTest extends TestCase {
 			array( 'wp_remote_request' ),
 			array( 'wp_safe_remote' ),
 			array( '\\bcurl_' ),
-			array( 'file_get_contents' ),
 			array( 'fsockopen' ),
 			array( 'script_loader_tag' ),
 		);
@@ -56,6 +55,24 @@ class StaticGuardTest extends TestCase {
 			$this->assertSame( count( $m[1] ), $all, 'every write names an option constant' );
 			foreach ( $m[1] as $name ) {
 				$this->assertContains( $name, array( 'FOP_CHAT_OPTION', 'FOP_CHAT_BUNDLED_OPTION' ) );
+			}
+		}
+	}
+
+	public function test_files_are_read_only_by_the_bundled_import_and_never_included_by_path() {
+		foreach ( $this->plugin_sources() as $file => $src ) {
+			$reads = preg_match_all( '/\\bfile_get_contents\\s*\\(/i', $src );
+			if ( 'class-fop-chat-bundled.php' === basename( $file ) ) {
+				$this->assertSame( 1, $reads );
+				$this->assertSame( 1, preg_match_all( '/\\bfile_get_contents\\s*\\(\\s*\\$path\\s*\\)/', $src ) );
+			} else {
+				$this->assertSame( 0, $reads, "file_get_contents in $file" );
+			}
+			// Only literal __DIR__ includes of the plugin's own classes; never a variable path (the config is read).
+			preg_match_all( '/^\\s*(?:include|require)(?:_once)?\\b\\s*\\(?\\s*([^;]*);/im', $src, $m );
+			$this->assertSame( 'front-office-pilot-chat.php' === basename( $file ) ? 3 : 0, count( $m[1] ), "includes in $file" );
+			foreach ( $m[1] as $target ) {
+				$this->assertMatchesRegularExpression( "/^__DIR__ \\. '\\/includes\\/class-fop-chat-[a-z]+\\.php'\\s*\\)?$/", trim( $target ), "include of $target in $file" );
 			}
 		}
 	}
