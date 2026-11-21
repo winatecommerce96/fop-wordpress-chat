@@ -29,7 +29,6 @@ class StaticGuardTest extends TestCase {
 		return array(
 			array( 'wp_ajax_' ),
 			array( 'register_rest_route' ),
-			array( '\\bupdate_(site_)?option\\s*\\(' ),
 			array( '\\badd_(site_)?option\\s*\\(' ),
 			array( 'set_(site_)?transient' ),
 			array( 'wp_remote_post' ),
@@ -40,6 +39,25 @@ class StaticGuardTest extends TestCase {
 			array( 'fsockopen' ),
 			array( 'script_loader_tag' ),
 		);
+	}
+
+	/**
+	 * v1.1.0: update_option only in the one-time bundled import, and only for the plugin's own two options.
+	 */
+	public function test_options_are_written_only_by_the_bundled_import() {
+		foreach ( $this->plugin_sources() as $file => $src ) {
+			preg_match_all( '/\\bupdate_(?:site_)?option\\s*\\(\\s*([A-Z_]+)/', $src, $m );
+			$all = preg_match_all( '/\\bupdate_(?:site_)?option\\s*\\(/', $src );
+			if ( 'class-fop-chat-bundled.php' !== basename( $file ) ) {
+				$this->assertSame( 0, $all, "update_option in $file" );
+				continue;
+			}
+			$this->assertSame( 3, $all );
+			$this->assertSame( count( $m[1] ), $all, 'every write names an option constant' );
+			foreach ( $m[1] as $name ) {
+				$this->assertContains( $name, array( 'FOP_CHAT_OPTION', 'FOP_CHAT_BUNDLED_OPTION' ) );
+			}
+		}
 	}
 
 	public function test_exactly_one_remote_get() {

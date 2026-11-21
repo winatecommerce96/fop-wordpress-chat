@@ -275,6 +275,9 @@ class FOP_Chat_Settings {
 		if ( null !== self::$status ) {
 			self::render_status( self::$status );
 		}
+		if ( FOP_Chat_Bundled::key_was_imported() ) {
+			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'Added from your Front Office Pilot download.', 'front-office-pilot-chat' ) . ' ' . esc_html__( 'You can change or clear it below.', 'front-office-pilot-chat' ) . '</p></div>';
+		}
 		echo '<form action="options.php" method="post">';
 		settings_fields( self::GROUP );
 		do_settings_sections( self::PAGE_SLUG );
