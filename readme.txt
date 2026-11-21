@@ -4,7 +4,7 @@ Tags: chat, live chat, chat widget, ai assistant, customer service
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,16 +12,16 @@ Adds your Front Office Pilot chat assistant to your WordPress site.
 
 == Description ==
 
-Front Office Pilot Chat adds the Front Office Pilot chat widget to every page of your site. Paste your site key and the plugin loads the hosted widget script. There is nothing else to configure in WordPress.
+Front Office Pilot Chat adds the Front Office Pilot chat widget to every page of your site. Download the plugin from your Front Office Pilot dashboard (Website chat) and your site key is already built in: upload it, activate it, and you are done. You can also install the plugin from anywhere else and paste your site key. There is nothing else to configure in WordPress.
 
-* One setting: your site key.
+* One setting: your site key, built into your dashboard download or pasted by you.
 * Loads one script from chat.frontofficepilot.com, asynchronously, in the footer.
 * Shows whether chat is live on your site, and links to your dashboard if your site address still needs adding.
 * No tracking, no extra database tables, no AJAX or REST endpoints.
 
 == External services ==
 
-This plugin relies on two external services. Nothing is sent until you save a site key.
+This plugin relies on two external services. Nothing is sent until a site key is saved, either by you or from the key built into your dashboard download.
 
 = Front Office Pilot (chat.frontofficepilot.com) =
 
@@ -41,6 +41,10 @@ Terms of service: https://vapi.ai/terms-of-service
 Privacy policy: https://vapi.ai/privacy
 
 == Installation ==
+
+If you downloaded the plugin from your Front Office Pilot dashboard (Website chat), your site key is already in it: upload the zip under Plugins, Add New, Upload Plugin (choose "Replace current with uploaded" if asked), activate it, and you are done.
+
+Otherwise:
 
 1. Upload the plugin zip under Plugins, Add New, Upload Plugin, and activate it.
 2. Go to Settings, Front Office Pilot Chat.
@@ -62,6 +66,9 @@ Your site address must be added in your Front Office Pilot dashboard under Websi
 No. It is a publishable key and appears in your page HTML. It cannot change your settings.
 
 == Changelog ==
+
+= 1.1.0 =
+* A plugin downloaded from your Front Office Pilot dashboard has your site key built in. It is saved once, when you activate the plugin or open any admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a multisite network the built-in key is never used; paste each site's own key instead.
 
 = 1.0.0 =
 * First release.

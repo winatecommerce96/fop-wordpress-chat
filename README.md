@@ -11,6 +11,15 @@ Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
 
 ## Install
 
+**From your dashboard (easiest).** On the **Website chat** page, click **Download for WordPress**. That zip has your
+site key built in: upload it (**Plugins → Add New → Upload Plugin → Install Now**; choose **Replace current with
+uploaded** if WordPress asks), click **Activate**, and you are done. The key is saved once, when you activate it or open any
+admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a
+multisite network the built-in key is never used: paste each site's own key. The generic release zip below has no
+key in it.
+
+**From the release zip:**
+
 1. Download `front-office-pilot-chat-<version>.zip` (or build it, see below).
 2. In WordPress: **Plugins → Add New → Upload Plugin**, choose the zip, **Install Now**, then **Activate**.
 3. Go to **Settings → Front Office Pilot Chat**.
@@ -21,8 +30,8 @@ Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
    - **"Add https://your-site in your Front Office Pilot dashboard under Website chat."** Open
      <https://app.frontofficepilot.com/chat-widget>, add that exact address, save, and reload the settings page.
 
-To remove the widget, clear the field and save, or deactivate the plugin. Deleting the plugin removes its option
-(on multisite, from every site).
+To remove the widget, clear the field and save, or deactivate the plugin. Deleting the plugin removes its two options, the site key and
+the one-time import marker (on multisite, from every site).
 
 ## What it sends
 
@@ -52,7 +61,7 @@ Two external services are involved. Nothing is sent until a site key is saved.
   sends nothing to Vapi.
 - Terms: <https://vapi.ai/terms-of-service>. Privacy: <https://vapi.ai/privacy>.
 
-The plugin itself has no tracking or telemetry, stores no other options, and registers no AJAX or REST endpoints.
+The plugin itself has no tracking or telemetry, stores only two options (the site key and a one-time import marker), and registers no AJAX or REST endpoints.
 
 ## Troubleshooting
 

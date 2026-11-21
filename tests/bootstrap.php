@@ -31,6 +31,8 @@ class FOP_Test_State {
 	public static $home_url = 'https://shop.example.com';
 	public static $multisite = false;
 	public static $sites = array( 1 );
+	public static $updates = array();
+	public static $activation = array();
 
 	public static function reset() {
 		self::$options               = array();
@@ -49,6 +51,8 @@ class FOP_Test_State {
 		self::$home_url              = 'https://shop.example.com';
 		self::$multisite             = false;
 		self::$sites                 = array( 1 );
+		self::$updates               = array();
+		self::$activation            = array();
 	}
 }
 
@@ -75,6 +79,14 @@ function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
 function get_option( $name, $default = false ) {
 	$blog = FOP_Test_State::$blog_id;
 	return array_key_exists( $name, FOP_Test_State::$options[ $blog ] ?? array() ) ? FOP_Test_State::$options[ $blog ][ $name ] : $default;
+}
+function update_option( $name, $value, $autoload = null ) {
+	FOP_Test_State::$options[ FOP_Test_State::$blog_id ][ $name ] = $value;
+	FOP_Test_State::$updates[] = array( $name, $value );
+	return true;
+}
+function register_activation_hook( $file, $callback ) {
+	FOP_Test_State::$activation[] = array( $file, $callback );
 }
 function delete_option( $name ) {
 	unset( FOP_Test_State::$options[ FOP_Test_State::$blog_id ][ $name ] );
