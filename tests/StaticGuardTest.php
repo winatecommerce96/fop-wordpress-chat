@@ -64,16 +64,27 @@ class StaticGuardTest extends TestCase {
 			$reads = preg_match_all( '/\\bfile_get_contents\\s*\\(/i', $src );
 			if ( 'class-fop-chat-bundled.php' === basename( $file ) ) {
 				$this->assertSame( 1, $reads );
-				$this->assertSame( 1, preg_match_all( '/\\bfile_get_contents\\s*\\(\\s*\\$path\\s*\\)/', $src ) );
+				$this->assertSame( 1, preg_match_all( '/\\bfile_get_contents\\s*\\(\\s*\\$path\\s*,\\s*false\\s*,\\s*null\\s*,\\s*0\\s*,\\s*self::MAX_BYTES \\+ 1\\s*\\)/', $src ) );
 			} else {
 				$this->assertSame( 0, $reads, "file_get_contents in $file" );
 			}
-			// Only literal __DIR__ includes of the plugin's own classes; never a variable path (the config is read).
-			preg_match_all( '/^\\s*(?:include|require)(?:_once)?\\b\\s*\\(?\\s*([^;]*);/im', $src, $m );
-			$this->assertSame( 'front-office-pilot-chat.php' === basename( $file ) ? 3 : 0, count( $m[1] ), "includes in $file" );
-			foreach ( $m[1] as $target ) {
-				$this->assertMatchesRegularExpression( "/^__DIR__ \\. '\\/includes\\/class-fop-chat-[a-z]+\\.php'\\s*\\)?$/", trim( $target ), "include of $target in $file" );
+			// Tokens, not text (comments are skipped): the only include/require/eval anywhere are the main file's three
+			// literal __DIR__ . '/includes/class-fop-chat-*.php' requires. The bundled config is read, never included.
+			$tokens = array_values( array_filter( token_get_all( $src ), function ( $t ) {
+				return ! ( is_array( $t ) && in_array( $t[0], array( T_WHITESPACE, T_COMMENT, T_DOC_COMMENT ), true ) );
+			} ) );
+			$found = 0;
+			foreach ( $tokens as $i => $tok ) {
+				if ( ! is_array( $tok ) || ! in_array( $tok[0], array( T_INCLUDE, T_INCLUDE_ONCE, T_REQUIRE, T_REQUIRE_ONCE, T_EVAL ), true ) ) {
+					continue;
+				}
+				$found++;
+				$this->assertSame( T_REQUIRE_ONCE, $tok[0], "include/require/eval in $file" );
+				$this->assertSame( array( T_DIR, '.' ), array( $tokens[ $i + 1 ][0], $tokens[ $i + 2 ] ), "require_once target in $file" );
+				$this->assertMatchesRegularExpression( "/^'\\/includes\\/class-fop-chat-[a-z]+\\.php'$/", $tokens[ $i + 3 ][1] );
+				$this->assertSame( ';', $tokens[ $i + 4 ] );
 			}
+			$this->assertSame( 'front-office-pilot-chat.php' === basename( $file ) ? 3 : 0, $found, "includes in $file" );
 		}
 	}
 

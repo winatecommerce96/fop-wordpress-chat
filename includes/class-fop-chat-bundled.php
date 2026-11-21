@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FOP_Chat_Bundled {
 
 	const MAX_BYTES = 2048;
-	const KEY_LINE  = "/^return array\\( 'site_key' => '(fop_pk_[A-Za-z0-9]{32})' \\);\\r?$/m";
+	const KEY_LINE  = "/^return array\\( 'site_key' => '(fop_pk_[A-Za-z0-9]{32})' \\);$/m";   // LF files only, as generated
 
 	/**
 	 * Import on activation (a fresh install) and on admin_init (an upload that replaces an existing copy).
@@ -59,11 +59,13 @@ class FOP_Chat_Bundled {
 	 * @return string
 	 */
 	private static function bundled_key( $path ) {
-		if ( ! is_string( $path ) || ! is_file( $path ) || ! is_readable( $path ) || filesize( $path ) > self::MAX_BYTES ) {
+		if ( ! is_string( $path ) || ! is_file( $path ) || ! is_readable( $path ) ) {
 			return '';
 		}
-		$text = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file in the plugin's own folder.
-		if ( ! is_string( $text ) || 0 !== strpos( $text, "<?php\n" ) ) {
+		// Capped read (a file that grows after the checks is still bounded); @: a file removed in between is no key,
+		// never a warning printed into wp-admin.
+		$text = @file_get_contents( $path, false, null, 0, self::MAX_BYTES + 1 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPress.PHP.NoSilencedErrors.Discouraged -- a local file in the plugin's own folder.
+		if ( ! is_string( $text ) || strlen( $text ) > self::MAX_BYTES || 0 !== strpos( $text, "<?php\n" ) || false !== strpos( $text, "\r" ) ) {
 			return '';
 		}
 		$found = preg_match_all( self::KEY_LINE, $text, $m );

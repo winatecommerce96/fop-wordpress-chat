@@ -98,8 +98,11 @@ class BundledTest extends TestCase {
 
 	private function real_config() {
 		$real = FOP_CHAT_BUNDLED_CONFIG;
-		if ( file_exists( $real ) || ! is_writable( dirname( $real ) ) ) {
+		if ( file_exists( $real ) ) {
 			$this->markTestSkipped( 'a developer fop-config.php is in the plugin root; not touching it' );
+		}
+		if ( ! is_writable( dirname( $real ) ) ) {
+			$this->markTestSkipped( 'the plugin root is not writable here' );
 		}
 		file_put_contents( $real, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
 		return $real;
@@ -130,12 +133,19 @@ class BundledTest extends TestCase {
 		$this->assertSame( self::KEY, $this->option( FOP_CHAT_OPTION ) );     // the key line is all that counts
 	}
 
+	public function test_a_crlf_key_line_after_an_lf_header_is_no_key() {
+		$path = $this->dir . '/fop-config.php';
+		file_put_contents( $path, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\r\n" );
+		FOP_Chat_Bundled::import( $path );
+		$this->assertSame( array(), FOP_Test_State::$updates );
+	}
+
 	public function test_an_oversized_file_is_no_key() {
 		FOP_Chat_Bundled::import( $this->config( str_repeat( "// padding\n", 300 ) . "return array( 'site_key' => '" . self::KEY . "' );" ) );
 		$this->assertSame( array(), FOP_Test_State::$updates );
 	}
 
-	public function test_windows_line_endings_still_import() {
+	public function test_windows_line_endings_are_no_key() {
 		$path = $this->dir . '/fop-config.php';
 		file_put_contents( $path, "<?php\r\nif ( ! defined( 'ABSPATH' ) ) {\r\n\texit;\r\n}\r\nreturn array( 'site_key' => '" . self::KEY . "' );\r\n" );
 		FOP_Chat_Bundled::import( $path );
