@@ -68,7 +68,7 @@ No. It is a publishable key and appears in your page HTML. It cannot change your
 == Changelog ==
 
 = 1.1.0 =
-* A plugin downloaded from your Front Office Pilot dashboard has your site key built in. It is saved once, when you activate the plugin or open any admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a multisite network, a network-activated plugin never imports a bundled key; paste each site's key instead.
+* A plugin downloaded from your Front Office Pilot dashboard has your site key built in. It is saved once, when you activate the plugin or open any admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a multisite network the built-in key is never used; paste each site's own key instead.
 
 = 1.0.0 =
 * First release.

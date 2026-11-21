@@ -27,8 +27,7 @@ if ( ! defined( 'FOP_CHAT_SCRIPT_URL' ) ) {
 define( 'FOP_CHAT_OPTION', 'fop_chat_site_key' );
 define( 'FOP_CHAT_DASHBOARD_URL', 'https://app.frontofficepilot.com/chat-widget' );
 define( 'FOP_CHAT_BUNDLED_OPTION', 'fop_chat_bundled_import' );   // 'imported' | 'kept': the one-time import ran
-define( 'FOP_CHAT_BUNDLED_CONFIG', __DIR__ . '/fop-config.php' );
-define( 'FOP_CHAT_MAIN_FILE', __FILE__ );  // only in a per-site download, never in the generic zip
+define( 'FOP_CHAT_BUNDLED_CONFIG', __DIR__ . '/fop-config.php' );  // only in a per-site download, never in the generic zip
 
 require_once __DIR__ . '/includes/class-fop-chat-settings.php';
 require_once __DIR__ . '/includes/class-fop-chat-embed.php';

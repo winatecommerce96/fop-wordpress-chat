@@ -13,9 +13,10 @@ Requires WordPress 6.4+ and PHP 7.4+. Licensed GPLv2 or later (see `LICENSE`).
 
 **From your dashboard (easiest).** On the **Website chat** page, click **Download for WordPress**. That zip has your
 site key built in: upload it (**Plugins → Add New → Upload Plugin → Install Now**; choose **Replace current with
-uploaded** if WordPress asks), click **Activate**, and you are done. The key is saved once, when you activate it or open any admin page after replacing it (never from a network
-activation on multisite); a key you
-already saved always wins, and a key you clear stays cleared. The generic release zip below has no key in it.
+uploaded** if WordPress asks), click **Activate**, and you are done. The key is saved once, when you activate it or open any
+admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a
+multisite network the built-in key is never used: paste each site's own key. The generic release zip below has no
+key in it.
 
 **From the release zip:**
 

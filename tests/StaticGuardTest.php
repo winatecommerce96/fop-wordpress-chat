@@ -67,7 +67,7 @@ class StaticGuardTest extends TestCase {
 
 	public function test_the_import_only_ever_reads_the_plugins_own_config_file() {
 		foreach ( $this->plugin_sources() as $file => $src ) {
-			preg_match_all( '/\\bimport\\(\\s*([^)]*)\\)/', $src, $m );
+			preg_match_all( '/\\bimport\\s*\\(\\s*([^)]*)\\)/', $src, $m );
 			foreach ( $m[1] as $arg ) {
 				if ( 'class-fop-chat-bundled.php' === basename( $file ) && '$path' === trim( $arg ) ) {
 					continue;                                               // the definition itself

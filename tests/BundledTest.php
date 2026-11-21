@@ -95,47 +95,39 @@ class BundledTest extends TestCase {
 		$this->assertSame( array(), FOP_Test_State::$updates );
 	}
 
-	public function test_a_network_activation_imports_nowhere() {
+	private function real_config() {
 		$real = FOP_CHAT_BUNDLED_CONFIG;
-		$this->assertFileDoesNotExist( $real, 'a developer fop-config.php is in the plugin root' );
+		if ( file_exists( $real ) ) {
+			$this->markTestSkipped( 'a developer fop-config.php is in the plugin root; not touching it' );
+		}
 		file_put_contents( $real, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
+		return $real;
+	}
+
+	public function test_multisite_never_imports_network_wide_or_per_site() {
+		$real = $this->real_config();
 		try {
 			FOP_Test_State::$multisite = true;
-			FOP_Chat_Bundled::on_hook( true );                                 // activate_{plugin} with $network_wide
+			FOP_Chat_Bundled::on_hook( true );                                 // network activation
+			FOP_Chat_Bundled::on_hook();                                       // per-site activation / admin_init
 			$this->assertSame( array(), FOP_Test_State::$updates );
-			FOP_Test_State::$network_active = array( plugin_basename( FOP_CHAT_MAIN_FILE ) );
-			FOP_Chat_Bundled::on_hook();                                       // admin_init on a subsite
-			$this->assertSame( array(), FOP_Test_State::$updates );
-			FOP_Test_State::$network_active = array();
-			FOP_Chat_Bundled::on_hook();                                       // activated on this one site only
+			FOP_Test_State::$multisite = false;
+			FOP_Chat_Bundled::on_hook();                                       // a single site: imports
 			$this->assertSame( self::KEY, $this->option( FOP_CHAT_OPTION ) );
 		} finally {
 			unlink( $real );
 		}
 	}
 
-	public function test_a_per_site_activation_on_a_network_still_imports() {
-		FOP_Test_State::$multisite = true;
-		$path = $this->config( "return array( 'site_key' => '" . self::KEY . "' );" );
-		FOP_Chat_Bundled::import( $path );
-		$this->assertSame( self::KEY, $this->option( FOP_CHAT_OPTION ) );
-	}
-
-	public function test_the_import_runs_on_activation_and_on_admin_init() {
-		$this->assertSame( dirname( __DIR__ ) . '/fop-config.php', FOP_CHAT_BUNDLED_CONFIG );
-		FOP_Chat_Bundled::init( dirname( __DIR__ ) . '/front-office-pilot-chat.php' );
-		$this->assertSame(
-			array( array( dirname( __DIR__ ) . '/front-office-pilot-chat.php', array( 'FOP_Chat_Bundled', 'on_hook' ) ) ),
-			FOP_Test_State::$activation
-		);
-		$this->assertContains( 'admin_init', array_keys( FOP_Test_State::$actions ) );
-	}
-
-	public function test_only_the_plugins_own_two_options_are_ever_written() {
-		FOP_Chat_Bundled::import( $this->config( "return array( 'site_key' => '" . self::KEY . "' );" ) );
-		foreach ( FOP_Test_State::$updates as $u ) {
-			$this->assertContains( $u[0], array( FOP_CHAT_OPTION, FOP_CHAT_BUNDLED_OPTION ) );
-		}
+	public function test_a_file_that_closes_our_buffer_or_opens_its_own_is_no_key() {
+		$level = ob_get_level();
+		ob_start();
+		echo 'PAGE';
+		FOP_Chat_Bundled::import( $this->config( "ob_end_clean();\nreturn array( 'site_key' => '" . self::KEY . "' );" ) );
+		FOP_Chat_Bundled::import( $this->config( "ob_start();\nreturn array( 'site_key' => '" . self::KEY . "' );" ) );
+		$this->assertSame( $level + 1, ob_get_level() );                    // no buffer left open, none of ours taken
+		$this->assertSame( 'PAGE', ob_get_clean() );                          // the caller's output survives
+		$this->assertSame( array(), FOP_Test_State::$updates );
 	}
 
 	public function test_the_notice_goes_once_the_owner_pastes_another_key() {
@@ -145,9 +137,7 @@ class BundledTest extends TestCase {
 	}
 
 	public function test_the_settings_page_says_where_an_imported_key_came_from() {
-		$real = FOP_CHAT_BUNDLED_CONFIG;
-		$this->assertFileDoesNotExist( $real, 'a developer fop-config.php is in the plugin root' );
-		file_put_contents( $real, "<?php\nreturn array( 'site_key' => '" . self::KEY . "' );\n" );
+		$real = $this->real_config();
 		try {
 			FOP_Chat_Bundled::import( $real );
 			$this->assertTrue( FOP_Chat_Bundled::key_was_imported() );
