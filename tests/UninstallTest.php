@@ -11,7 +11,7 @@ class UninstallTest extends TestCase {
 	}
 
 	public function test_single_site_deletes_option() {
-		FOP_Test_State::$options[1] = array( 'fop_chat_site_key' => 'fop_pk_' . str_repeat( 'A', 32 ), 'fop_chat_bundled_import' => 'imported', 'blogname' => 'x' );
+		FOP_Test_State::$options[1] = array( 'fop_chat_site_key' => 'fop_pk_' . str_repeat( 'A', 32 ), 'fop_chat_bundled_import' => 'imported', 'fop_chat_cache_notice' => '1', 'blogname' => 'x' );
 		include dirname( __DIR__ ) . '/uninstall.php';
 		$this->assertSame( array( 'blogname' => 'x' ), FOP_Test_State::$options[1] );
 	}
@@ -20,7 +20,7 @@ class UninstallTest extends TestCase {
 		FOP_Test_State::$multisite = true;
 		FOP_Test_State::$sites     = array( 1, 2, 5 );
 		foreach ( array( 1, 2, 5 ) as $id ) {
-			FOP_Test_State::$options[ $id ] = array( 'fop_chat_site_key' => 'fop_pk_' . str_repeat( 'B', 32 ), 'fop_chat_bundled_import' => 'kept', 'keep' => $id );
+			FOP_Test_State::$options[ $id ] = array( 'fop_chat_site_key' => 'fop_pk_' . str_repeat( 'B', 32 ), 'fop_chat_bundled_import' => 'kept', 'fop_chat_cache_notice' => '1', 'keep' => $id );
 		}
 		include dirname( __DIR__ ) . '/uninstall.php';
 		foreach ( array( 1, 2, 5 ) as $id ) {

@@ -17,7 +17,7 @@ class SettingsTest extends TestCase {
 	public function test_plugin_header() {
 		$src = file_get_contents( dirname( __DIR__ ) . '/front-office-pilot-chat.php' );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Front Office Pilot Chat\s*$/m', $src );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*1\.1\.0\s*$/m', $src );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*1\.1\.1\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Requires PHP:\s*7\.4\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*License:\s*GPLv2 or later\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*front-office-pilot-chat\s*$/m', $src );

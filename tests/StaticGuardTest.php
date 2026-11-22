@@ -42,11 +42,17 @@ class StaticGuardTest extends TestCase {
 
 	/**
 	 * v1.1.0: update_option only in the one-time bundled import, and only for the plugin's own two options.
+	 * v1.1.1: plus exactly one write in the activation notice, of its own flag only.
 	 */
 	public function test_options_are_written_only_by_the_bundled_import() {
 		foreach ( $this->plugin_sources() as $file => $src ) {
 			preg_match_all( '/\\bupdate_(?:site_|network_|blog_)?option\\s*\\(\\s*([A-Z_]+)/i', $src, $m );
 			$all = preg_match_all( '/\\bupdate_(?:site_|network_|blog_)?option\\s*\\(/i', $src );
+			if ( 'class-fop-chat-notice.php' === basename( $file ) ) {
+				$this->assertSame( 1, $all );
+				$this->assertSame( array( 'FOP_CHAT_NOTICE_OPTION' ), $m[1] );
+				continue;
+			}
 			if ( 'class-fop-chat-bundled.php' !== basename( $file ) ) {
 				$this->assertSame( 0, $all, "update_option in $file" );
 				continue;
@@ -68,7 +74,7 @@ class StaticGuardTest extends TestCase {
 			} else {
 				$this->assertSame( 0, $reads, "file_get_contents in $file" );
 			}
-			// Tokens, not text (comments are skipped): the only include/require/eval anywhere are the main file's three
+			// Tokens, not text (comments are skipped): the only include/require/eval anywhere are the main file's four
 			// literal __DIR__ . '/includes/class-fop-chat-*.php' requires. The bundled config is read, never included.
 			$tokens = array_values( array_filter( token_get_all( $src ), function ( $t ) {
 				return ! ( is_array( $t ) && in_array( $t[0], array( T_WHITESPACE, T_COMMENT, T_DOC_COMMENT ), true ) );
@@ -84,7 +90,7 @@ class StaticGuardTest extends TestCase {
 				$this->assertMatchesRegularExpression( "/^'\\/includes\\/class-fop-chat-[a-z]+\\.php'$/", $tokens[ $i + 3 ][1] );
 				$this->assertSame( ';', $tokens[ $i + 4 ] );
 			}
-			$this->assertSame( 'front-office-pilot-chat.php' === basename( $file ) ? 3 : 0, $found, "includes in $file" );
+			$this->assertSame( 'front-office-pilot-chat.php' === basename( $file ) ? 4 : 0, $found, "includes in $file" );
 		}
 	}
 
