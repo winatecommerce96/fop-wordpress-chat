@@ -18,7 +18,7 @@ class BuildZipTest extends TestCase {
 		} finally {
 			unlink( $stray );
 		}
-		$this->assertSame( $root . '/dist/front-office-pilot-chat-1.1.0.zip', $out );
+		$this->assertSame( $root . '/dist/front-office-pilot-chat-1.1.1.zip', $out );
 
 		$zip = new ZipArchive();
 		$this->assertTrue( true === $zip->open( $out ) );
@@ -37,6 +37,7 @@ class BuildZipTest extends TestCase {
 				'front-office-pilot-chat/front-office-pilot-chat.php',
 				'front-office-pilot-chat/includes/class-fop-chat-bundled.php',
 				'front-office-pilot-chat/includes/class-fop-chat-embed.php',
+				'front-office-pilot-chat/includes/class-fop-chat-notice.php',
 				'front-office-pilot-chat/includes/class-fop-chat-settings.php',
 				'front-office-pilot-chat/readme.txt',
 				'front-office-pilot-chat/uninstall.php',

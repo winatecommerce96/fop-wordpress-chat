@@ -42,7 +42,7 @@ class DocsTest extends TestCase {
 		$src = file_get_contents( dirname( __DIR__ ) . '/readme.txt' );
 		$this->assertMatchesRegularExpression( '/^Tested up to:\s*7\.1\s*$/m', $src );
 		$this->assertMatchesRegularExpression( '/^Requires PHP:\s*7\.4\s*$/m', $src );
-		$this->assertMatchesRegularExpression( '/^Stable tag:\s*1\.1\.0\s*$/m', $src );
+		$this->assertMatchesRegularExpression( '/^Stable tag:\s*1\.1\.1\s*$/m', $src );
 	}
 
 	public function test_plugin_and_author_uri_are_distinct_real_pages() {

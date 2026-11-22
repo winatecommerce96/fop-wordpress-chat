@@ -4,7 +4,7 @@ Tags: chat, live chat, chat widget, ai assistant, customer service
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,9 @@ Your site address must be added in your Front Office Pilot dashboard under Websi
 No. It is a publishable key and appears in your page HTML. It cannot change your settings.
 
 == Changelog ==
+
+= 1.1.1 =
+* After you activate the plugin, a one-time notice reminds you to clear your caching plugin (WP Rocket, W3 Total Cache, LiteSpeed Cache...) so visitors see the chat. You see your site uncached while logged in.
 
 = 1.1.0 =
 * A plugin downloaded from your Front Office Pilot dashboard has your site key built in. It is saved once, when you activate the plugin or open any admin page after replacing it; a key you already saved always wins, and a key you clear stays cleared. On a multisite network the built-in key is never used; paste each site's own key instead.
